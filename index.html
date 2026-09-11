@@ -174,8 +174,8 @@
             </div>
             <div class="p-4 overflow-y-auto flex-1">
                 <div class="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-200">
-                    <h4 class="font-bold text-sm text-blue-800 mb-2">Import dari Excel</h4>
-                    <p class="text-xs text-gray-600 mb-2">Siapkan file Excel dengan 2 kolom: <b>Nama</b> dan <b>Kelas</b>. Data akan otomatis masuk ke database.</p>
+                    <h4 class="font-bold text-sm text-blue-800 mb-1">Import dari Excel</h4>
+                    <p class="text-xs text-gray-600 mb-2">Siapkan file Excel dengan 2 kolom: <b>Nama</b> dan <b>Kelas</b>.</p>
                     <input type="file" id="file-import-siswa" accept=".xlsx, .xls, .csv" class="text-sm">
                 </div>
                 <form id="form-add-siswa" class="flex flex-col sm:flex-row gap-2 mb-4 border-t pt-4">
@@ -207,7 +207,7 @@
                             </tr>
                         </thead>
                         <tbody id="table-body-siswa">
-                            <!-- Data Siswa Masuk Sini -->
+                            <!-- Data Siswa -->
                         </tbody>
                     </table>
                 </div>
@@ -223,7 +223,14 @@
                 <button onclick="closeModal('modal-materi')" class="text-gray-500 hover:text-red-500 font-bold text-xl">&times;</button>
             </div>
             <div class="p-4 overflow-y-auto flex-1">
-                <form id="form-add-materi" class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4">
+                <!-- FITUR IMPORT EXCEL MATERI -->
+                <div class="bg-indigo-50 p-3 rounded-lg mb-4 border border-indigo-200">
+                    <h4 class="font-bold text-sm text-indigo-800 mb-1">Import Materi dari Excel</h4>
+                    <p class="text-xs text-gray-600 mb-2">Siapkan file Excel dengan 3 kolom wajib: <b>Nama Materi</b>, <b>Kelas</b>, dan <b>Urutan</b>.</p>
+                    <input type="file" id="file-import-materi" accept=".xlsx, .xls, .csv" class="text-sm">
+                </div>
+
+                <form id="form-add-materi" class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4 border-t pt-4">
                     <input type="text" id="new-materi-nama" placeholder="Nama Materi (cth: Jilid 1 Hal 1)" required class="sm:col-span-2 px-3 py-2 border rounded">
                     <select id="new-materi-kelas" required class="px-3 py-2 border rounded">
                         <option value="">Pilih Kelas</option>
@@ -241,7 +248,7 @@
                         <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                     </select>
                     <input type="number" id="new-materi-urut" placeholder="Urutan (cth: 1)" required class="px-3 py-2 border rounded">
-                    <button type="submit" class="sm:col-span-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Tambah Materi</button>
+                    <button type="submit" class="sm:col-span-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Tambah Manual</button>
                 </form>
                 
                 <div class="mb-3 flex items-center gap-2">
@@ -274,7 +281,7 @@
                             </tr>
                         </thead>
                         <tbody id="table-body-materi">
-                            <!-- Data Materi Masuk Sini -->
+                            <!-- Data Materi -->
                         </tbody>
                     </table>
                 </div>
@@ -290,9 +297,7 @@
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ==========================================================
-        // CONFIG FIREBASE ANDA
-        // ==========================================================
+        // CONFIG FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyA7kpnyUzgEBrFo6ElBcrx8CgbnhmSexaA",
             authDomain: "e-tahsin.firebaseapp.com",
@@ -303,13 +308,12 @@
             appId: "1:346365600365:web:c60146dae2b1e0523a9564",
             measurementId: "G-E64FGX53C2"
         };
-        // ==========================================================
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Utility: Set Tanggal Hari Ini
+        // Utility: Tanggal
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('input-tanggal').value = today;
         document.getElementById('filter-tanggal').value = today;
@@ -322,10 +326,9 @@
         };
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
 
-        // Loading Alert
         const showLoading = (msg) => Swal.fire({title: msg, allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-        // 1. AUTHENTICATION
+        // AUTHENTICATION
         setPersistence(auth, browserLocalPersistence);
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -361,7 +364,7 @@
             });
         });
 
-        // 2. KELOLA SISWA (CRUD & Import)
+        // KELOLA SISWA
         async function loadSiswaTable() {
             const tbody = document.getElementById('table-body-siswa');
             tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4">Memuat data...</td></tr>';
@@ -375,7 +378,6 @@
                     siswaList.push({ id: doc.id, ...doc.data() });
                 });
 
-                // Urutkan lokal berdasarkan Kelas lalu Nama
                 siswaList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
 
                 if(siswaList.length === 0) {
@@ -447,7 +449,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // 3. KELOLA MATERI (Berdasarkan Kelas)
+        // KELOLA MATERI
         async function loadMateriTable() {
             const tbody = document.getElementById('table-body-materi');
             const filterKelas = document.getElementById('filter-materi-tabel').value;
@@ -509,11 +511,45 @@
             }
         };
 
-        // 4. LOGIKA HALAMAN UTAMA (INPUT HAFALAN)
+        // Import Excel Materi
+        document.getElementById('file-import-materi').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async (evt) => {
+                showLoading('Mengimpor Materi...');
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet);
+                
+                let count = 0;
+                for(let row of json) {
+                    // Mendukung variasi judul kolom
+                    const namaMat = row['Nama Materi'] || row['materi'] || row['Nama'];
+                    const kelasMat = row['Kelas'] || row['kelas'];
+                    const urutMat = row['Urutan'] || row['urutan'] || row['No'];
+
+                    if(namaMat && kelasMat && urutMat !== undefined) {
+                        await addDoc(collection(db, "materi_list"), {
+                            nama_materi: String(namaMat).trim(),
+                            kelas: String(kelasMat).trim(),
+                            urutan: Number(urutMat)
+                        });
+                        count++;
+                    }
+                }
+                document.getElementById('file-import-materi').value = "";
+                Swal.fire('Sukses', `${count} Data Materi berhasil diimpor!`, 'success');
+                loadMateriTable();
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // INPUT HAFALAN
         let studentsData = [];
         let materiData = [];
 
-        // Saat Kelas dipilih
         document.getElementById('select-kelas').addEventListener('change', async (e) => {
             const kelas = e.target.value;
             const selSiswa = document.getElementById('select-siswa');
@@ -527,7 +563,6 @@
 
             if(!kelas) return;
 
-            // Ambil Siswa berdasarkan kelas
             const qSiswa = query(collection(db, "students"), where("kelas", "==", kelas));
             const snapSiswa = await getDocs(qSiswa);
             studentsData = snapSiswa.docs.map(d => ({id: d.id, ...d.data()}));
@@ -537,7 +572,6 @@
             studentsData.forEach(s => selSiswa.innerHTML += `<option value="${s.id}">${s.nama}</option>`);
             selSiswa.disabled = false;
 
-            // Ambil Materi berdasarkan kelas
             const qMateri = query(collection(db, "materi_list"), where("kelas", "==", kelas));
             const snapMateri = await getDocs(qMateri);
             materiData = snapMateri.docs.map(d => ({id: d.id, ...d.data()}));
@@ -547,7 +581,6 @@
             materiData.forEach(m => selMateri.innerHTML += `<option value="${m.nama_materi}" data-urut="${m.urutan}">${m.urutan}. ${m.nama_materi}</option>`);
         });
 
-        // Saat Siswa dipilih (Tampilkan Riwayat & Target)
         document.getElementById('select-siswa').addEventListener('change', (e) => {
             const studentId = e.target.value;
             const selMateri = document.getElementById('select-materi');
@@ -563,7 +596,6 @@
             document.getElementById('txt-riwayat').innerText = student.hafalan_terakhir;
             document.getElementById('txt-status').innerText = student.status_terakhir;
 
-            // Menentukan Target Selanjutnya
             let targetText = "Materi Awal";
             if(student.hafalan_terakhir !== "-") {
                 const riwayatMateri = materiData.find(m => m.nama_materi === student.hafalan_terakhir);
@@ -577,7 +609,7 @@
                             targetText = "Semua materi kelas ini selesai!";
                         }
                     } else {
-                        targetText = student.hafalan_terakhir; // Tetap karena ulang
+                        targetText = student.hafalan_terakhir;
                         selMateri.value = student.hafalan_terakhir;
                     }
                 }
@@ -587,7 +619,6 @@
             selMateri.disabled = false;
         });
 
-        // Simpan Data Hafalan (Proteksi Dobel Input)
         async function simpanHafalan(statusEval) {
             const tgl = document.getElementById('input-tanggal').value;
             const kelas = document.getElementById('select-kelas').value;
@@ -602,7 +633,6 @@
 
             showLoading('Mengecek Data...');
 
-            // Cek apakah hari ini sudah diinput
             const qCek = query(collection(db, "hafalan_records"), 
                 where("nama_siswa", "==", namaSiswa), 
                 where("tanggal", "==", tgl));
@@ -615,7 +645,6 @@
             Swal.fire({title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
             try {
-                // Simpan ke hafalan_records
                 await addDoc(collection(db, "hafalan_records"), {
                     tanggal: tgl,
                     kelas: kelas,
@@ -624,13 +653,11 @@
                     status_evaluasi: statusEval
                 });
 
-                // Update data students
                 await updateDoc(doc(db, "students", studentId), {
                     hafalan_terakhir: materi,
                     status_terakhir: statusEval
                 });
 
-                // Update lokal variabel agar riwayat langsung berubah tanpa refresh
                 const studentIndex = studentsData.findIndex(s => s.id === studentId);
                 if(studentIndex > -1) {
                     studentsData[studentIndex].hafalan_terakhir = materi;
@@ -638,7 +665,6 @@
                 }
 
                 Swal.fire('Sukses!', 'Data hafalan berhasil disimpan.', 'success').then(() => {
-                    // Reset dropdown siswa (siap untuk siswa berikutnya)
                     document.getElementById('select-siswa').value = "";
                     document.getElementById('select-materi').value = "";
                     document.getElementById('select-materi').disabled = true;
@@ -653,7 +679,7 @@
         document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lanjut"));
         document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Ulang"));
 
-        // 5. EKSPOR LAPORAN (PDF & EXCEL)
+        // LAPORAN
         async function fetchLaporanData() {
             const fKelas = document.getElementById('filter-kelas').value;
             const fTgl = document.getElementById('filter-tanggal').value;
@@ -673,7 +699,6 @@
             return { data, tanggal: fTgl, kelas: fKelas || "Semua Kelas" };
         }
 
-        // Export PDF
         document.getElementById('btn-download-pdf').addEventListener('click', async () => {
             const { data, tanggal, kelas } = await fetchLaporanData();
             if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk tanggal/kelas tersebut.', 'info');
@@ -691,13 +716,12 @@
                 head: [['No', 'Nama Siswa', 'Kelas', 'Materi', 'Keterangan']],
                 body: data,
                 theme: 'grid',
-                headStyles: { fillColor: [21, 128, 61] } // Warna Hijau Tailwind
+                headStyles: { fillColor: [21, 128, 61] }
             });
 
             doc.save(`Laporan_Hafalan_${tanggal}.pdf`);
         });
 
-        // Export Excel
         document.getElementById('btn-download-excel').addEventListener('click', async () => {
             const { data, tanggal, kelas } = await fetchLaporanData();
             if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk tanggal/kelas tersebut.', 'info');
