@@ -84,12 +84,18 @@
                             <label class="block text-sm font-semibold text-gray-700">Kelas</label>
                             <select id="select-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-green-500">
                                 <option value="">-- Pilih Kelas --</option>
-                                <option value="Kelas 1">Kelas 1</option>
-                                <option value="Kelas 2">Kelas 2</option>
-                                <option value="Kelas 3">Kelas 3</option>
-                                <option value="Kelas 4">Kelas 4</option>
-                                <option value="Kelas 5">Kelas 5</option>
-                                <option value="Kelas 6">Kelas 6</option>
+                                <option value="1 Abu Bakar">1 Abu Bakar</option>
+                                <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                                <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                                <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                                <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                                <option value="3 Imam Maliki">3 Imam Maliki</option>
+                                <option value="4 Imam Syafii">4 Imam Syafii</option>
+                                <option value="4 Imam Hambali">4 Imam Hambali</option>
+                                <option value="5 Imam Asyari">5 Imam Asyari</option>
+                                <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                                <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                                <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                             </select>
                         </div>
                     </div>
@@ -128,12 +134,18 @@
                         <label class="block text-sm font-medium text-gray-700">Filter Kelas</label>
                         <select id="filter-kelas" class="mt-1 w-full px-3 py-2 border rounded-lg">
                             <option value="">Semua Kelas</option>
-                            <option value="Kelas 1">Kelas 1</option>
-                            <option value="Kelas 2">Kelas 2</option>
-                            <option value="Kelas 3">Kelas 3</option>
-                            <option value="Kelas 4">Kelas 4</option>
-                            <option value="Kelas 5">Kelas 5</option>
-                            <option value="Kelas 6">Kelas 6</option>
+                            <option value="1 Abu Bakar">1 Abu Bakar</option>
+                            <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                            <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                            <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                            <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                            <option value="3 Imam Maliki">3 Imam Maliki</option>
+                            <option value="4 Imam Syafii">4 Imam Syafii</option>
+                            <option value="4 Imam Hambali">4 Imam Hambali</option>
+                            <option value="5 Imam Asyari">5 Imam Asyari</option>
+                            <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                            <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                            <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                         </select>
                     </div>
                     <div>
@@ -166,16 +178,22 @@
                     <p class="text-xs text-gray-600 mb-2">Siapkan file Excel dengan 2 kolom: <b>Nama</b> dan <b>Kelas</b>. Data akan otomatis masuk ke database.</p>
                     <input type="file" id="file-import-siswa" accept=".xlsx, .xls, .csv" class="text-sm">
                 </div>
-                <form id="form-add-siswa" class="flex gap-2 mb-4 border-t pt-4">
+                <form id="form-add-siswa" class="flex flex-col sm:flex-row gap-2 mb-4 border-t pt-4">
                     <input type="text" id="new-siswa-nama" placeholder="Nama Siswa" required class="flex-1 px-3 py-2 border rounded">
-                    <select id="new-siswa-kelas" required class="w-1/3 px-3 py-2 border rounded">
+                    <select id="new-siswa-kelas" required class="sm:w-1/3 px-3 py-2 border rounded">
                         <option value="">Pilih Kelas</option>
-                        <option value="Kelas 1">Kelas 1</option>
-                        <option value="Kelas 2">Kelas 2</option>
-                        <option value="Kelas 3">Kelas 3</option>
-                        <option value="Kelas 4">Kelas 4</option>
-                        <option value="Kelas 5">Kelas 5</option>
-                        <option value="Kelas 6">Kelas 6</option>
+                        <option value="1 Abu Bakar">1 Abu Bakar</option>
+                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                        <option value="3 Imam Maliki">3 Imam Maliki</option>
+                        <option value="4 Imam Syafii">4 Imam Syafii</option>
+                        <option value="4 Imam Hambali">4 Imam Hambali</option>
+                        <option value="5 Imam Asyari">5 Imam Asyari</option>
+                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                     </select>
                     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah</button>
                 </form>
@@ -209,12 +227,18 @@
                     <input type="text" id="new-materi-nama" placeholder="Nama Materi (cth: Jilid 1 Hal 1)" required class="sm:col-span-2 px-3 py-2 border rounded">
                     <select id="new-materi-kelas" required class="px-3 py-2 border rounded">
                         <option value="">Pilih Kelas</option>
-                        <option value="Kelas 1">Kelas 1</option>
-                        <option value="Kelas 2">Kelas 2</option>
-                        <option value="Kelas 3">Kelas 3</option>
-                        <option value="Kelas 4">Kelas 4</option>
-                        <option value="Kelas 5">Kelas 5</option>
-                        <option value="Kelas 6">Kelas 6</option>
+                        <option value="1 Abu Bakar">1 Abu Bakar</option>
+                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                        <option value="3 Imam Maliki">3 Imam Maliki</option>
+                        <option value="4 Imam Syafii">4 Imam Syafii</option>
+                        <option value="4 Imam Hambali">4 Imam Hambali</option>
+                        <option value="5 Imam Asyari">5 Imam Asyari</option>
+                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                     </select>
                     <input type="number" id="new-materi-urut" placeholder="Urutan (cth: 1)" required class="px-3 py-2 border rounded">
                     <button type="submit" class="sm:col-span-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Tambah Materi</button>
@@ -224,12 +248,18 @@
                     <label class="text-sm font-semibold">Tampilkan Kelas:</label>
                     <select id="filter-materi-tabel" class="px-2 py-1 border rounded text-sm">
                         <option value="Semua">Semua Kelas</option>
-                        <option value="Kelas 1">Kelas 1</option>
-                        <option value="Kelas 2">Kelas 2</option>
-                        <option value="Kelas 3">Kelas 3</option>
-                        <option value="Kelas 4">Kelas 4</option>
-                        <option value="Kelas 5">Kelas 5</option>
-                        <option value="Kelas 6">Kelas 6</option>
+                        <option value="1 Abu Bakar">1 Abu Bakar</option>
+                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                        <option value="3 Imam Maliki">3 Imam Maliki</option>
+                        <option value="4 Imam Syafii">4 Imam Syafii</option>
+                        <option value="4 Imam Hambali">4 Imam Hambali</option>
+                        <option value="5 Imam Asyari">5 Imam Asyari</option>
+                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                     </select>
                 </div>
 
@@ -257,11 +287,11 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy, getDoc } 
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // ==========================================================
-        // TEMPELKAN CONFIG FIREBASE ANDA DI SINI
+        // CONFIG FIREBASE ANDA
         // ==========================================================
         const firebaseConfig = {
             apiKey: "AIzaSyA7kpnyUzgEBrFo6ElBcrx8CgbnhmSexaA",
@@ -335,20 +365,37 @@
         async function loadSiswaTable() {
             const tbody = document.getElementById('table-body-siswa');
             tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4">Memuat data...</td></tr>';
-            const q = query(collection(db, "students"), orderBy("kelas"), orderBy("nama"));
-            const snap = await getDocs(q);
-            tbody.innerHTML = '';
-            snap.forEach(doc => {
-                const data = doc.data();
-                tbody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="px-4 py-2">${data.nama}</td>
-                        <td class="px-4 py-2">${data.kelas}</td>
-                        <td class="px-4 py-2 text-center">
-                            <button onclick="hapusSiswa('${doc.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>
-                        </td>
-                    </tr>`;
-            });
+            
+            try {
+                const snap = await getDocs(collection(db, "students"));
+                tbody.innerHTML = '';
+                
+                let siswaList = [];
+                snap.forEach(doc => {
+                    siswaList.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Urutkan lokal berdasarkan Kelas lalu Nama
+                siswaList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
+
+                if(siswaList.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-400">Belum ada data siswa.</td></tr>';
+                    return;
+                }
+
+                siswaList.forEach(data => {
+                    tbody.innerHTML += `
+                        <tr class="border-b">
+                            <td class="px-4 py-2">${data.nama}</td>
+                            <td class="px-4 py-2">${data.kelas}</td>
+                            <td class="px-4 py-2 text-center">
+                                <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>
+                            </td>
+                        </tr>`;
+                });
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-red-500">Gagal memuat data siswa.</td></tr>';
+            }
         }
 
         document.getElementById('form-add-siswa').addEventListener('submit', async (e) => {
@@ -385,8 +432,8 @@
                 for(let row of json) {
                     if(row.Nama && row.Kelas) {
                         await addDoc(collection(db, "students"), {
-                            nama: row.Nama,
-                            kelas: row.Kelas,
+                            nama: String(row.Nama).trim(),
+                            kelas: String(row.Kelas).trim(),
                             hafalan_terakhir: "-",
                             status_terakhir: "-"
                         });
@@ -406,25 +453,39 @@
             const filterKelas = document.getElementById('filter-materi-tabel').value;
             tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">Memuat data...</td></tr>';
             
-            let q = query(collection(db, "materi_list"), orderBy("kelas"), orderBy("urutan"));
-            if(filterKelas !== "Semua") {
-                q = query(collection(db, "materi_list"), where("kelas", "==", filterKelas), orderBy("urutan"));
+            try {
+                const snap = await getDocs(collection(db, "materi_list"));
+                tbody.innerHTML = '';
+                
+                let materiList = [];
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    if(filterKelas === "Semua" || d.kelas === filterKelas) {
+                        materiList.push({ id: doc.id, ...d });
+                    }
+                });
+
+                materiList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.urutan - b.urutan);
+
+                if(materiList.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-400">Belum ada data materi.</td></tr>';
+                    return;
+                }
+
+                materiList.forEach(data => {
+                    tbody.innerHTML += `
+                        <tr class="border-b">
+                            <td class="px-4 py-2 text-center">${data.urutan}</td>
+                            <td class="px-4 py-2">${data.nama_materi}</td>
+                            <td class="px-4 py-2">${data.kelas}</td>
+                            <td class="px-4 py-2 text-center">
+                                <button onclick="hapusMateri('${data.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>
+                            </td>
+                        </tr>`;
+                });
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Gagal memuat data materi.</td></tr>';
             }
-            
-            const snap = await getDocs(q);
-            tbody.innerHTML = '';
-            snap.forEach(doc => {
-                const data = doc.data();
-                tbody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="px-4 py-2 text-center">${data.urutan}</td>
-                        <td class="px-4 py-2">${data.nama_materi}</td>
-                        <td class="px-4 py-2">${data.kelas}</td>
-                        <td class="px-4 py-2 text-center">
-                            <button onclick="hapusMateri('${doc.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>
-                        </td>
-                    </tr>`;
-            });
         }
 
         document.getElementById('filter-materi-tabel').addEventListener('change', loadMateriTable);
@@ -467,18 +528,20 @@
             if(!kelas) return;
 
             // Ambil Siswa berdasarkan kelas
-            const qSiswa = query(collection(db, "students"), where("kelas", "==", kelas), orderBy("nama"));
+            const qSiswa = query(collection(db, "students"), where("kelas", "==", kelas));
             const snapSiswa = await getDocs(qSiswa);
             studentsData = snapSiswa.docs.map(d => ({id: d.id, ...d.data()}));
+            studentsData.sort((a,b) => a.nama.localeCompare(b.nama));
 
             selSiswa.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>';
             studentsData.forEach(s => selSiswa.innerHTML += `<option value="${s.id}">${s.nama}</option>`);
             selSiswa.disabled = false;
 
             // Ambil Materi berdasarkan kelas
-            const qMateri = query(collection(db, "materi_list"), where("kelas", "==", kelas), orderBy("urutan"));
+            const qMateri = query(collection(db, "materi_list"), where("kelas", "==", kelas));
             const snapMateri = await getDocs(qMateri);
             materiData = snapMateri.docs.map(d => ({id: d.id, ...d.data()}));
+            materiData.sort((a,b) => a.urutan - b.urutan);
             
             selMateri.innerHTML = '<option value="">-- Pilih Materi --</option>';
             materiData.forEach(m => selMateri.innerHTML += `<option value="${m.nama_materi}" data-urut="${m.urutan}">${m.urutan}. ${m.nama_materi}</option>`);
@@ -590,7 +653,6 @@
         document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lanjut"));
         document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Ulang"));
 
-
         // 5. EKSPOR LAPORAN (PDF & EXCEL)
         async function fetchLaporanData() {
             const fKelas = document.getElementById('filter-kelas').value;
@@ -640,7 +702,6 @@
             const { data, tanggal, kelas } = await fetchLaporanData();
             if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk tanggal/kelas tersebut.', 'info');
             
-            // Format ulang array array menjadi array of object untuk excel
             const excelData = data.map(row => ({
                 "No": row[0],
                 "Nama Siswa": row[1],
