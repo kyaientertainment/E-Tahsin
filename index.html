@@ -61,7 +61,7 @@
         </div>
     </div>
 
-    <!-- NAVBAR UTAMA (Sudah Diperbaiki Rata Kiri Kanan) -->
+    <!-- NAVBAR UTAMA -->
     <nav id="navbar" class="hidden bg-green-700 text-white p-3 sm:p-4 shadow-md sticky top-0 z-40">
         <div class="max-w-5xl mx-auto flex justify-between items-center gap-1">
             <div class="text-left">
@@ -82,8 +82,6 @@
 
     <!-- HALAMAN GURU -->
     <div id="guru-page" class="hidden max-w-3xl mx-auto mt-6 px-4 pb-10 space-y-6">
-        
-        <!-- Bagian Input Hafalan -->
         <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-600">
             <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Input Hafalan Harian</h2>
             
@@ -139,7 +137,6 @@
             </form>
         </div>
 
-        <!-- Bagian Download Laporan (Khusus Guru) -->
         <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-600">
             <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Unduh Laporan Harian (PDF)</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -346,8 +343,8 @@
     <!-- SCRIPT LOGIKA APLIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // PERHATIAN: signInWithRedirect digunakan di sini
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect } 
+        // Menambahkan getRedirectResult untuk menangkap kembali sesi login Google
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -368,6 +365,12 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
+
+        // Tangkap hasil login redirect dari Google
+        getRedirectResult(auth).catch((error) => {
+            console.error("Gagal menangkap redirect:", error);
+            Swal.fire('Gagal Login', error.message, 'error');
+        });
 
         // Utility: Set Tanggal Defaults
         const today = new Date().toISOString().split('T')[0];
@@ -431,7 +434,6 @@
             }
         });
 
-        // PERHATIAN: Logika Redirect Google Login
         document.getElementById('btn-google-login').addEventListener('click', () => {
             showLoading('Mengarahkan ke Google...');
             signInWithRedirect(auth, googleProvider);
@@ -614,7 +616,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // 4. INPUT HAFALAN (GURU & ADMIN)
+        // 4. INPUT HAFALAN (GURU)
         let studentsData = [];
         let materiData = [];
 
@@ -743,7 +745,7 @@
         document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lancar"));
         document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Tidak Lancar"));
 
-        // 5. LAPORAN & EKSPOR (Fungsi Global untuk Guru & Admin)
+        // 5. LAPORAN & EKSPOR
         async function fetchLaporanData(fKelas, fTgl) {
             let q = query(collection(db, "hafalan_records"), where("tanggal", "==", fTgl));
             if(fKelas) q = query(collection(db, "hafalan_records"), where("tanggal", "==", fTgl), where("kelas", "==", fKelas));
@@ -784,7 +786,6 @@
             doc.save(`Laporan_Hafalan_${tanggal}.pdf`);
         }
 
-        // Event Listener untuk Tombol Laporan ADMIN
         document.getElementById('btn-download-pdf-admin').addEventListener('click', async () => {
             const k = document.getElementById('filter-kelas-admin').value;
             const t = document.getElementById('filter-tanggal-admin').value;
@@ -815,7 +816,6 @@
             XLSX.writeFile(workbook, `Laporan_Hafalan_${tanggal}.xlsx`);
         });
 
-        // Event Listener untuk Tombol Laporan GURU (Hanya PDF)
         document.getElementById('btn-download-pdf-guru').addEventListener('click', async () => {
             const k = document.getElementById('filter-kelas-guru').value;
             const t = document.getElementById('filter-tanggal-guru').value;
