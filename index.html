@@ -17,15 +17,20 @@
     <style>
         .hidden { display: none !important; }
         .modal { background-color: rgba(0,0,0,0.5); }
+        .tab-active {
+            border-bottom: 3px solid #0d9488;
+            color: #0d9488;
+            font-weight: 700;
+        }
     </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-800">
+<body class="bg-slate-50 font-sans text-gray-800">
 
     <!-- HALAMAN LOGIN -->
     <div id="login-page" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
             <div class="text-center mb-6">
-                <h1 class="text-3xl font-bold text-green-700">E-Tahsin</h1>
+                <h1 class="text-3xl font-bold text-teal-700">E-Tahsin</h1>
                 <h2 class="text-sm font-semibold text-gray-600 mt-1">Sistem Pencatatan Hafalan Siswa</h2>
                 <h3 class="text-xs text-gray-500">MI Salafiyah Wareng</h3>
             </div>
@@ -33,13 +38,13 @@
             <form id="login-form" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email Pengguna</label>
-                    <input type="email" id="email" required placeholder="email@sekolah.com" class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <input type="email" id="email" required placeholder="email@sekolah.com" class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-teal-500 focus:border-teal-500">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="password" required placeholder="******" class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-green-500 focus:border-green-500">
+                    <input type="password" id="password" required placeholder="******" class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-teal-500 focus:border-teal-500">
                 </div>
-                <button type="submit" class="w-full bg-green-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-700 transition">Masuk Aplikasi</button>
+                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-teal-700 transition">Masuk Aplikasi</button>
             </form>
 
             <div class="mt-6 flex items-center justify-center space-x-2">
@@ -62,34 +67,27 @@
     </div>
 
     <!-- NAVBAR UTAMA -->
-    <nav id="navbar" class="hidden bg-green-700 text-white p-3 sm:p-4 shadow-md sticky top-0 z-40">
-        <div class="max-w-5xl mx-auto flex justify-between items-center gap-1">
-            
-            <!-- BAGIAN KIRI: Judul -->
+    <nav id="navbar" class="hidden bg-slate-800 text-white p-3 sm:p-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex justify-between items-center gap-1">
             <div class="text-left">
                 <h1 class="text-lg sm:text-xl md:text-2xl font-bold leading-tight">E-Tahsin</h1>
-                <p class="text-[10px] sm:text-xs text-green-200 leading-tight">MI Salafiyah Wareng</p>
+                <p class="text-[10px] sm:text-xs text-slate-300 leading-tight">MI Salafiyah Wareng</p>
             </div>
-            
-            <!-- BAGIAN KANAN: User & Tombol -->
             <div class="flex items-center gap-2 sm:gap-3 text-right">
                 <div>
                     <p id="user-display-name" class="font-bold text-[11px] sm:text-sm leading-tight">-</p>
-                    <p id="user-display-role" class="text-green-200 text-[9px] sm:text-xs leading-tight">-</p>
+                    <p id="user-display-role" class="text-teal-400 text-[9px] sm:text-xs leading-tight">-</p>
                 </div>
                 <button id="btn-logout" class="bg-red-500 hover:bg-red-600 px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-semibold transition whitespace-nowrap">
                     Log Out
                 </button>
             </div>
-            
         </div>
     </nav>
 
     <!-- HALAMAN GURU -->
     <div id="guru-page" class="hidden max-w-3xl mx-auto mt-6 px-4 pb-10 space-y-6">
-        
-        <!-- Bagian Input Hafalan -->
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-green-600">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-teal-600">
             <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Input Hafalan Harian</h2>
             
             <form id="form-hafalan" class="space-y-4">
@@ -100,7 +98,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700">Kelas</label>
-                        <select id="select-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-green-500">
+                        <select id="select-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-teal-500">
                             <option value="">-- Pilih Kelas --</option>
                             <option value="1 Abu Bakar">1 Abu Bakar</option>
                             <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
@@ -120,32 +118,31 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">Nama Siswa</label>
-                    <select id="select-siswa" required disabled class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50 focus:ring-green-500">
+                    <select id="select-siswa" required disabled class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50 focus:ring-teal-500">
                         <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
                     </select>
                 </div>
 
-                <div id="info-siswa" class="hidden bg-blue-50 p-3 rounded-lg border border-blue-200 text-sm">
-                    <p class="text-blue-800"><strong>Riwayat Terakhir:</strong> <span id="txt-riwayat">-</span> (<span id="txt-status">-</span>)</p>
-                    <p class="text-green-700 mt-1"><strong>Target Hari Ini:</strong> <span id="txt-target">-</span></p>
+                <div id="info-siswa" class="hidden bg-teal-50 p-3 rounded-lg border border-teal-200 text-sm">
+                    <p class="text-teal-900"><strong>Riwayat Terakhir:</strong> <span id="txt-riwayat">-</span> (<span id="txt-status">-</span>)</p>
+                    <p class="text-teal-700 mt-1"><strong>Target Hari Ini:</strong> <span id="txt-target">-</span></p>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700">Materi yang Disetorkan</label>
-                    <select id="select-materi" required disabled class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50 focus:ring-green-500">
+                    <select id="select-materi" required disabled class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50 focus:ring-teal-500">
                         <option value="">-- Pilih Siswa Terlebih Dahulu --</option>
                     </select>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t">
-                    <button type="button" id="btn-lancar" class="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 shadow transition">Lancar (Lanjut)</button>
-                    <button type="button" id="btn-ulang" class="flex-1 bg-yellow-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-yellow-600 shadow transition">Tidak Lancar (Ulang)</button>
+                    <button type="button" id="btn-lancar" class="flex-1 bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 shadow transition">Lancar (Lanjut)</button>
+                    <button type="button" id="btn-ulang" class="flex-1 bg-amber-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-amber-600 shadow transition">Tidak Lancar (Ulang)</button>
                 </div>
             </form>
         </div>
 
-        <!-- Bagian Download Laporan (Khusus Guru) -->
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-600">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-blue-600">
             <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Unduh Laporan Harian (PDF)</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <div>
@@ -177,143 +174,61 @@
         </div>
     </div>
 
-    <!-- HALAMAN ADMINISTRATOR -->
-    <div id="admin-page" class="hidden max-w-5xl mx-auto mt-6 px-4 pb-10 space-y-6">
-        <div class="bg-indigo-900 text-white p-6 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h2 class="text-2xl font-bold">Panel Kontrol Administrator</h2>
-                <p class="text-sm text-indigo-200">Kelola data master siswa, materi hafalan, dan laporan sekolah.</p>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="openModal('modal-siswa')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow">Kelola Siswa</button>
-                <button onclick="openModal('modal-materi')" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-semibold text-sm shadow">Kelola Materi</button>
-            </div>
+    <!-- HALAMAN ADMINISTRATOR DESAIN MODERN (MATCHING FOTO) -->
+    <div id="admin-page" class="hidden max-w-6xl mx-auto mt-6 px-4 pb-12 space-y-6">
+        
+        <!-- Banner Header Hitam/Dark Slate -->
+        <div class="bg-slate-800 text-white p-6 rounded-2xl shadow-md">
+            <h2 class="text-2xl font-bold">Panel Kontrol Administrator</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">Pengelolaan Master Data Siswa, Materi & Rekapitulasi</p>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-indigo-600">
-            <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi & Laporan Hafalan</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Filter Kelas</label>
-                    <select id="filter-kelas-admin" class="mt-1 w-full px-3 py-2 border rounded-lg">
-                        <option value="">Semua Kelas</option>
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Filter Tanggal</label>
-                    <input type="date" id="filter-tanggal-admin" class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button id="btn-download-pdf-admin" class="flex-1 bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-red-700 flex items-center justify-center">
-                    Download Laporan PDF
-                </button>
-                <button id="btn-download-excel-admin" class="flex-1 bg-green-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-green-700 flex items-center justify-center">
-                    Download Laporan Excel
-                </button>
-            </div>
+        <!-- Navigasi Tab -->
+        <div class="border-b border-gray-200 flex gap-8 text-sm sm:text-base font-semibold text-gray-500">
+            <button id="tab-btn-siswa" onclick="switchAdminTab('siswa')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Data Siswa</button>
+            <button id="tab-btn-materi" onclick="switchAdminTab('materi')" class="pb-3 tab-active transition">Materi Hafalan</button>
+            <button id="tab-btn-rekap" onclick="switchAdminTab('rekap')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Rekap & Ekspor</button>
         </div>
-    </div>
 
-    <!-- MODAL KELOLA SISWA (ADMIN) -->
-    <div id="modal-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-                <h3 class="text-lg font-bold text-gray-800">Kelola Data Siswa</h3>
-                <button onclick="closeModal('modal-siswa')" class="text-gray-500 hover:text-red-500 font-bold text-xl">&times;</button>
+        <!-- ISI TAB 1: DATA SISWA -->
+        <div id="admin-tab-siswa" class="hidden space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between gap-3">
+                <button onclick="openModal('modal-add-siswa')" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
+                    + Tambah Siswa Manual
+                </button>
+                <label class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer">
+                    📥 Import Excel Siswa
+                    <input type="file" id="file-import-siswa" accept=".xlsx, .xls, .csv" class="hidden">
+                </label>
             </div>
-            <div class="p-4 overflow-y-auto flex-1">
-                <div class="bg-blue-50 p-3 rounded-lg mb-4 border border-blue-200">
-                    <h4 class="font-bold text-sm text-blue-800 mb-1">Import dari Excel</h4>
-                    <p class="text-xs text-gray-600 mb-2">Siapkan file Excel dengan 2 kolom: <b>Nama</b> dan <b>Kelas</b>.</p>
-                    <input type="file" id="file-import-siswa" accept=".xlsx, .xls, .csv" class="text-sm">
-                </div>
-                <form id="form-add-siswa" class="flex flex-col sm:flex-row gap-2 mb-4 border-t pt-4">
-                    <input type="text" id="new-siswa-nama" placeholder="Nama Siswa" required class="flex-1 px-3 py-2 border rounded">
-                    <select id="new-siswa-kelas" required class="sm:w-1/3 px-3 py-2 border rounded">
-                        <option value="">Pilih Kelas</option>
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah</button>
-                </form>
+
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm text-left text-gray-500 border">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <table class="min-w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs uppercase bg-slate-50 text-gray-500 border-b">
                             <tr>
-                                <th class="px-4 py-2 border">Nama</th>
-                                <th class="px-4 py-2 border">Kelas</th>
-                                <th class="px-4 py-2 border text-center">Aksi</th>
+                                <th class="px-6 py-4 font-bold">NAMA SISWA</th>
+                                <th class="px-6 py-4 font-bold">KELAS</th>
+                                <th class="px-6 py-4 font-bold text-center">AKSI</th>
                             </tr>
                         </thead>
-                        <tbody id="table-body-siswa">
+                        <tbody id="table-body-siswa" class="divide-y divide-gray-100">
+                            <!-- Data Siswa -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL KELOLA MATERI (ADMIN) -->
-    <div id="modal-materi" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-                <h3 class="text-lg font-bold text-gray-800">Kelola Materi Hafalan</h3>
-                <button onclick="closeModal('modal-materi')" class="text-gray-500 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <div class="p-4 overflow-y-auto flex-1">
-                <div class="bg-indigo-50 p-3 rounded-lg mb-4 border border-indigo-200">
-                    <h4 class="font-bold text-sm text-indigo-800 mb-1">Import Materi dari Excel</h4>
-                    <p class="text-xs text-gray-600 mb-2">Siapkan file Excel dengan 3 kolom: <b>Nama Materi</b>, <b>Kelas</b>, dan <b>Urutan</b>.</p>
-                    <input type="file" id="file-import-materi" accept=".xlsx, .xls, .csv" class="text-sm">
-                </div>
-
-                <form id="form-add-materi" class="grid grid-cols-1 sm:grid-cols-4 gap-2 mb-4 border-t pt-4">
-                    <input type="text" id="new-materi-nama" placeholder="Nama Materi" required class="sm:col-span-2 px-3 py-2 border rounded">
-                    <select id="new-materi-kelas" required class="px-3 py-2 border rounded">
-                        <option value="">Pilih Kelas</option>
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                    <input type="number" id="new-materi-urut" placeholder="Urutan" required class="px-3 py-2 border rounded">
-                    <button type="submit" class="sm:col-span-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Tambah Manual</button>
-                </form>
+        <!-- ISI TAB 2: MATERI HAFALAN -->
+        <div id="admin-tab-materi" class="space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <button onclick="openModal('modal-add-materi')" class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
+                    + Tambah Materi Manual
+                </button>
                 
-                <div class="mb-3 flex items-center gap-2">
-                    <label class="text-sm font-semibold">Tampilkan Kelas:</label>
-                    <select id="filter-materi-tabel" class="px-2 py-1 border rounded text-sm">
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <select id="filter-materi-tabel" class="px-3 py-2 border rounded-lg text-sm bg-white">
                         <option value="Semua">Semua Kelas</option>
                         <option value="1 Abu Bakar">1 Abu Bakar</option>
                         <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
@@ -328,30 +243,152 @@
                         <option value="6 Imam Ghazali">6 Imam Ghazali</option>
                         <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                     </select>
-                </div>
 
+                    <label class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
+                        📥 Import Excel Materi
+                        <input type="file" id="file-import-materi" accept=".xlsx, .xls, .csv" class="hidden">
+                    </label>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm text-left text-gray-500 border">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                    <table class="min-w-full text-sm text-left text-gray-600">
+                        <thead class="text-xs uppercase bg-slate-50 text-gray-500 border-b">
                             <tr>
-                                <th class="px-4 py-2 border w-16 text-center">Urut</th>
-                                <th class="px-4 py-2 border">Nama Materi</th>
-                                <th class="px-4 py-2 border">Kelas</th>
-                                <th class="px-4 py-2 border text-center">Aksi</th>
+                                <th class="px-6 py-4 font-bold">KELAS</th>
+                                <th class="px-6 py-4 font-bold w-24">URUTAN</th>
+                                <th class="px-6 py-4 font-bold">NAMA MATERI</th>
+                                <th class="px-6 py-4 font-bold text-center w-28">AKSI</th>
                             </tr>
                         </thead>
-                        <tbody id="table-body-materi">
+                        <tbody id="table-body-materi" class="divide-y divide-gray-100">
+                            <!-- Data Materi -->
                         </tbody>
                     </table>
                 </div>
             </div>
+        </div>
+
+        <!-- ISI TAB 3: REKAP & EKSPOR -->
+        <div id="admin-tab-rekap" class="hidden space-y-4">
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi Laporan Hafalan</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Filter Kelas</label>
+                        <select id="filter-kelas-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white">
+                            <option value="">Semua Kelas</option>
+                            <option value="1 Abu Bakar">1 Abu Bakar</option>
+                            <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                            <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                            <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                            <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                            <option value="3 Imam Maliki">3 Imam Maliki</option>
+                            <option value="4 Imam Syafii">4 Imam Syafii</option>
+                            <option value="4 Imam Hambali">4 Imam Hambali</option>
+                            <option value="5 Imam Asyari">5 Imam Asyari</option>
+                            <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                            <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                            <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Filter Tanggal</label>
+                        <input type="date" id="filter-tanggal-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white">
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button id="btn-download-pdf-admin" class="flex-1 bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-red-700 flex items-center justify-center shadow">
+                        Download Laporan PDF
+                    </button>
+                    <button id="btn-download-excel-admin" class="flex-1 bg-teal-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-teal-700 flex items-center justify-center shadow">
+                        Download Laporan Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL TAMBAH SISWA MANUAL -->
+    <div id="modal-add-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-800">Tambah Data Siswa</h3>
+                <button onclick="closeModal('modal-add-siswa')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
+            </div>
+            <form id="form-add-siswa" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap Siswa</label>
+                    <input type="text" id="new-siswa-nama" required placeholder="Contoh: Budi Santoso" class="mt-1 w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
+                    <select id="new-siswa-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
+                        <option value="">Pilih Kelas</option>
+                        <option value="1 Abu Bakar">1 Abu Bakar</option>
+                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                        <option value="3 Imam Maliki">3 Imam Maliki</option>
+                        <option value="4 Imam Syafii">4 Imam Syafii</option>
+                        <option value="4 Imam Hambali">4 Imam Hambali</option>
+                        <option value="5 Imam Asyari">5 Imam Asyari</option>
+                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Simpan Siswa</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL TAMBAH MATERI MANUAL -->
+    <div id="modal-add-materi" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-800">Tambah Materi Hafalan</h3>
+                <button onclick="closeModal('modal-add-materi')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
+            </div>
+            <form id="form-add-materi" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nama Materi</label>
+                    <input type="text" id="new-materi-nama" required placeholder="Contoh: Jilid 1 Halaman 1" class="mt-1 w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
+                    <select id="new-materi-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
+                        <option value="">Pilih Kelas</option>
+                        <option value="1 Abu Bakar">1 Abu Bakar</option>
+                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                        <option value="3 Imam Maliki">3 Imam Maliki</option>
+                        <option value="4 Imam Syafii">4 Imam Syafii</option>
+                        <option value="4 Imam Hambali">4 Imam Hambali</option>
+                        <option value="5 Imam Asyari">5 Imam Asyari</option>
+                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nomor Urut</label>
+                    <input type="number" id="new-materi-urut" required placeholder="Contoh: 1" class="mt-1 w-full px-3 py-2 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Simpan Materi</button>
+            </form>
         </div>
     </div>
 
     <!-- SCRIPT LOGIKA APLIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } 
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -373,19 +410,44 @@
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // Utility: Set Tanggal Defaults
+        getRedirectResult(auth).catch((error) => {
+            console.error("Gagal menangkap redirect:", error);
+            Swal.fire('Gagal Login', error.message, 'error');
+        });
+
+        // Tanggal Defaults
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('input-tanggal').value = today;
         document.getElementById('filter-tanggal-guru').value = today;
         document.getElementById('filter-tanggal-admin').value = today;
 
-        window.openModal = (id) => { 
-            document.getElementById(id).classList.remove('hidden');
-            if(id === 'modal-siswa') loadSiswaTable();
-            if(id === 'modal-materi') loadMateriTable();
-        };
+        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
         const showLoading = (msg) => Swal.fire({title: msg, allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+
+        // Tab Switch Admin
+        window.switchAdminTab = (tabName) => {
+            document.getElementById('admin-tab-siswa').classList.add('hidden');
+            document.getElementById('admin-tab-materi').classList.add('hidden');
+            document.getElementById('admin-tab-rekap').classList.add('hidden');
+            
+            document.getElementById('tab-btn-siswa').classList.remove('tab-active');
+            document.getElementById('tab-btn-materi').classList.remove('tab-active');
+            document.getElementById('tab-btn-rekap').classList.remove('tab-active');
+
+            if(tabName === 'siswa') {
+                document.getElementById('admin-tab-siswa').classList.remove('hidden');
+                document.getElementById('tab-btn-siswa').classList.add('tab-active');
+                loadSiswaTable();
+            } else if(tabName === 'materi') {
+                document.getElementById('admin-tab-materi').classList.remove('hidden');
+                document.getElementById('tab-btn-materi').classList.add('tab-active');
+                loadMateriTable();
+            } else if(tabName === 'rekap') {
+                document.getElementById('admin-tab-rekap').classList.remove('hidden');
+                document.getElementById('tab-btn-rekap').classList.add('tab-active');
+            }
+        };
 
         // 1. AUTHENTICATION & ROLE MANAGEMENT
         setPersistence(auth, browserLocalPersistence);
@@ -410,6 +472,7 @@
                 if (role === "Administrator") {
                     guruPage.classList.add('hidden');
                     adminPage.classList.remove('hidden');
+                    loadMateriTable(); // Default ke tab materi
                 } else {
                     adminPage.classList.add('hidden');
                     guruPage.classList.remove('hidden');
@@ -435,14 +498,9 @@
             }
         });
 
-        document.getElementById('btn-google-login').addEventListener('click', async () => {
-            showLoading('Membuka Google Sign-In...');
-            try {
-                await signInWithPopup(auth, googleProvider);
-                Swal.close();
-            } catch (error) {
-                Swal.fire('Gagal Login', 'Terjadi kesalahan saat memproses login Google.', 'error');
-            }
+        document.getElementById('btn-google-login').addEventListener('click', () => {
+            showLoading('Mengarahkan ke Google...');
+            signInWithRedirect(auth, googleProvider);
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => {
@@ -459,7 +517,7 @@
         // 2. KELOLA SISWA (ADMIN)
         async function loadSiswaTable() {
             const tbody = document.getElementById('table-body-siswa');
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4">Memuat data...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6">Memuat data...</td></tr>';
             try {
                 const snap = await getDocs(collection(db, "students"));
                 tbody.innerHTML = '';
@@ -468,21 +526,21 @@
                 siswaList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
 
                 if(siswaList.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-400">Belum ada data siswa.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-400">Belum ada data siswa.</td></tr>';
                     return;
                 }
                 siswaList.forEach(data => {
                     tbody.innerHTML += `
-                        <tr class="border-b">
-                            <td class="px-4 py-2">${data.nama}</td>
-                            <td class="px-4 py-2">${data.kelas}</td>
-                            <td class="px-4 py-2 text-center">
-                                <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-medium text-gray-800">${data.nama}</td>
+                            <td class="px-6 py-4 text-gray-600">${data.kelas}</td>
+                            <td class="px-6 py-4 text-center">
+                                <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-xs font-semibold">Hapus</button>
                             </td>
                         </tr>`;
                 });
             } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-red-500">Gagal memuat data siswa.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-red-500">Gagal memuat data siswa.</td></tr>';
             }
         }
 
@@ -493,6 +551,7 @@
             showLoading('Menyimpan...');
             await addDoc(collection(db, "students"), { nama, kelas, hafalan_terakhir: "-", status_terakhir: "-" });
             document.getElementById('form-add-siswa').reset();
+            closeModal('modal-add-siswa');
             Swal.close();
             loadSiswaTable();
         });
@@ -537,7 +596,7 @@
         async function loadMateriTable() {
             const tbody = document.getElementById('table-body-materi');
             const filterKelas = document.getElementById('filter-materi-tabel').value;
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4">Memuat data...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6">Memuat data...</td></tr>';
             try {
                 const snap = await getDocs(collection(db, "materi_list"));
                 tbody.innerHTML = '';
@@ -551,22 +610,22 @@
                 materiList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.urutan - b.urutan);
 
                 if(materiList.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-400">Belum ada data materi.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Belum ada data materi.</td></tr>';
                     return;
                 }
                 materiList.forEach(data => {
                     tbody.innerHTML += `
-                        <tr class="border-b">
-                            <td class="px-4 py-2 text-center">${data.urutan}</td>
-                            <td class="px-4 py-2">${data.nama_materi}</td>
-                            <td class="px-4 py-2">${data.kelas}</td>
-                            <td class="px-4 py-2 text-center">
-                                <button onclick="hapusMateri('${data.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="px-6 py-4 font-medium text-gray-800">${data.kelas}</td>
+                            <td class="px-6 py-4 text-gray-600">${data.urutan}</td>
+                            <td class="px-6 py-4 font-medium text-gray-800">${data.nama_materi}</td>
+                            <td class="px-6 py-4 text-center">
+                                <button onclick="hapusMateri('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-xs font-semibold">Hapus</button>
                             </td>
                         </tr>`;
                 });
             } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Gagal memuat data materi.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-red-500">Gagal memuat data materi.</td></tr>';
             }
         }
 
@@ -580,6 +639,7 @@
             showLoading('Menyimpan...');
             await addDoc(collection(db, "materi_list"), { nama_materi: nama, kelas: kelas, urutan: urut });
             document.getElementById('form-add-materi').reset();
+            closeModal('modal-add-materi');
             Swal.close();
             loadMateriTable();
         });
@@ -751,7 +811,7 @@
         document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lancar"));
         document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Tidak Lancar"));
 
-        // 5. LAPORAN & EKSPOR (Fungsi Global untuk Guru & Admin)
+        // 5. LAPORAN & EKSPOR
         async function fetchLaporanData(fKelas, fTgl) {
             let q = query(collection(db, "hafalan_records"), where("tanggal", "==", fTgl));
             if(fKelas) q = query(collection(db, "hafalan_records"), where("tanggal", "==", fTgl), where("kelas", "==", fKelas));
@@ -786,13 +846,12 @@
                 head: [['No', 'Nama Siswa', 'Kelas', 'Materi', 'Keterangan']],
                 body: bodyPDF,
                 theme: 'grid',
-                headStyles: { fillColor: [21, 128, 61] }
+                headStyles: { fillColor: [13, 148, 136] }
             });
 
             doc.save(`Laporan_Hafalan_${tanggal}.pdf`);
         }
 
-        // Event Listener untuk Tombol Laporan ADMIN
         document.getElementById('btn-download-pdf-admin').addEventListener('click', async () => {
             const k = document.getElementById('filter-kelas-admin').value;
             const t = document.getElementById('filter-tanggal-admin').value;
@@ -823,7 +882,6 @@
             XLSX.writeFile(workbook, `Laporan_Hafalan_${tanggal}.xlsx`);
         });
 
-        // Event Listener untuk Tombol Laporan GURU (Hanya PDF)
         document.getElementById('btn-download-pdf-guru').addEventListener('click', async () => {
             const k = document.getElementById('filter-kelas-guru').value;
             const t = document.getElementById('filter-tanggal-guru').value;
