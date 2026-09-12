@@ -62,19 +62,26 @@
     </div>
 
     <!-- NAVBAR UTAMA -->
-    <nav id="navbar" class="hidden bg-green-700 text-white p-4 shadow-md sticky top-0 z-40">
-        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-            <div>
-                <h1 class="text-xl md:text-2xl font-bold">E-Tahsin</h1>
-                <p class="text-xs text-green-200">MI Salafiyah Wareng</p>
+    <nav id="navbar" class="hidden bg-green-700 text-white p-3 sm:p-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto flex justify-between items-center gap-1">
+            
+            <!-- BAGIAN KIRI: Judul -->
+            <div class="text-left">
+                <h1 class="text-lg sm:text-xl md:text-2xl font-bold leading-tight">E-Tahsin</h1>
+                <p class="text-[10px] sm:text-xs text-green-200 leading-tight">MI Salafiyah Wareng</p>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="text-right text-xs sm:text-sm">
-                    <p id="user-display-name" class="font-bold">-</p>
-                    <p id="user-display-role" class="text-green-200 text-xs">-</p>
+            
+            <!-- BAGIAN KANAN: User & Tombol -->
+            <div class="flex items-center gap-2 sm:gap-3 text-right">
+                <div>
+                    <p id="user-display-name" class="font-bold text-[11px] sm:text-sm leading-tight">-</p>
+                    <p id="user-display-role" class="text-green-200 text-[9px] sm:text-xs leading-tight">-</p>
                 </div>
-                <button id="btn-logout" class="bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded-lg text-xs font-semibold transition">Log Out</button>
+                <button id="btn-logout" class="bg-red-500 hover:bg-red-600 px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-semibold transition whitespace-nowrap">
+                    Log Out
+                </button>
             </div>
+            
         </div>
     </nav>
 
