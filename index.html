@@ -174,23 +174,20 @@
         </div>
     </div>
 
-    <!-- HALAMAN ADMINISTRATOR DESAIN MODERN (MATCHING FOTO) -->
+    <!-- HALAMAN ADMINISTRATOR -->
     <div id="admin-page" class="hidden max-w-6xl mx-auto mt-6 px-4 pb-12 space-y-6">
-        
-        <!-- Banner Header Hitam/Dark Slate -->
         <div class="bg-slate-800 text-white p-6 rounded-2xl shadow-md">
             <h2 class="text-2xl font-bold">Panel Kontrol Administrator</h2>
             <p class="text-xs sm:text-sm text-slate-300 mt-1">Pengelolaan Master Data Siswa, Materi & Rekapitulasi</p>
         </div>
 
-        <!-- Navigasi Tab -->
         <div class="border-b border-gray-200 flex gap-8 text-sm sm:text-base font-semibold text-gray-500">
             <button id="tab-btn-siswa" onclick="switchAdminTab('siswa')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Data Siswa</button>
             <button id="tab-btn-materi" onclick="switchAdminTab('materi')" class="pb-3 tab-active transition">Materi Hafalan</button>
             <button id="tab-btn-rekap" onclick="switchAdminTab('rekap')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Rekap & Ekspor</button>
         </div>
 
-        <!-- ISI TAB 1: DATA SISWA -->
+        <!-- TAB DATA SISWA -->
         <div id="admin-tab-siswa" class="hidden space-y-4">
             <div class="flex flex-col sm:flex-row justify-between gap-3">
                 <button onclick="openModal('modal-add-siswa')" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
@@ -213,14 +210,13 @@
                             </tr>
                         </thead>
                         <tbody id="table-body-siswa" class="divide-y divide-gray-100">
-                            <!-- Data Siswa -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- ISI TAB 2: MATERI HAFALAN -->
+        <!-- TAB MATERI HAFALAN -->
         <div id="admin-tab-materi" class="space-y-4">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
                 <button onclick="openModal('modal-add-materi')" class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
@@ -263,14 +259,13 @@
                             </tr>
                         </thead>
                         <tbody id="table-body-materi" class="divide-y divide-gray-100">
-                            <!-- Data Materi -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- ISI TAB 3: REKAP & EKSPOR -->
+        <!-- TAB REKAP & EKSPOR -->
         <div id="admin-tab-rekap" class="hidden space-y-4">
             <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi Laporan Hafalan</h3>
@@ -390,7 +385,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where } 
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, writeBatch } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // CONFIG FIREBASE
@@ -592,7 +587,7 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // 3. KELOLA MATERI (ADMIN)
+        // 3. KELOLA MATERI (ADMIN) - DILENGKAPIFITUR NIMPA/OVERWRITE
         async function loadMateriTable() {
             const tbody = document.getElementById('table-body-materi');
             const filterKelas = document.getElementById('filter-materi-tabel').value;
@@ -651,35 +646,69 @@
             }
         };
 
+        // IMPOR EXCEL MATERI DENGAN LOGIKA PENIMPAAN DATA LAMA
         document.getElementById('file-import-materi').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
-            const reader = new FileReader();
-            reader.onload = async (evt) => {
-                showLoading('Mengimpor Materi...');
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet);
-                let count = 0;
-                for(let row of json) {
-                    const namaMat = row['Nama Materi'] || row['materi'] || row['Nama'];
-                    const kelasMat = row['Kelas'] || row['kelas'];
-                    const urutMat = row['Urutan'] || row['urutan'] || row['No'];
-                    if(namaMat && kelasMat && urutMat !== undefined) {
-                        await addDoc(collection(db, "materi_list"), {
-                            nama_materi: String(namaMat).trim(),
-                            kelas: String(kelasMat).trim(),
-                            urutan: Number(urutMat)
-                        });
-                        count++;
-                    }
+
+            Swal.fire({
+                title: 'Menimpa Seluruh Data Materi?',
+                text: 'Semua data materi lama di database akan dihapus bersih dan digantikan oleh data dari file Excel ini.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Timpa Data!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    document.getElementById('file-import-materi').value = "";
+                    return;
                 }
-                document.getElementById('file-import-materi').value = "";
-                Swal.fire('Sukses', `${count} Data Materi berhasil diimpor!`, 'success');
-                loadMateriTable();
-            };
-            reader.readAsArrayBuffer(file);
+
+                const reader = new FileReader();
+                reader.onload = async (evt) => {
+                    showLoading('Menghapus materi lama & mengunggah materi baru...');
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const json = XLSX.utils.sheet_to_json(sheet);
+
+                        // 1. Hapus Seluruh Data Materi Lama
+                        const oldSnap = await getDocs(collection(db, "materi_list"));
+                        const deletePromises = [];
+                        oldSnap.forEach((docItem) => {
+                            deletePromises.push(deleteDoc(doc(db, "materi_list", docItem.id)));
+                        });
+                        await Promise.all(deletePromises);
+
+                        // 2. Unggah Data Materi Baru
+                        let count = 0;
+                        for(let row of json) {
+                            const namaMat = row['Nama Materi'] || row['materi'] || row['Nama'];
+                            const kelasMat = row['Kelas'] || row['kelas'];
+                            const urutMat = row['Urutan'] || row['urutan'] || row['No'];
+                            if(namaMat && kelasMat && urutMat !== undefined) {
+                                await addDoc(collection(db, "materi_list"), {
+                                    nama_materi: String(namaMat).trim(),
+                                    kelas: String(kelasMat).trim(),
+                                    urutan: Number(urutMat)
+                                });
+                                count++;
+                            }
+                        }
+                        
+                        document.getElementById('file-import-materi').value = "";
+                        Swal.fire('Berhasil Ditimpa!', `${count} Data Materi baru telah berhasil diunggah.`, 'success');
+                        loadMateriTable();
+                    } catch (err) {
+                        console.error(err);
+                        Swal.fire('Error', 'Gagal menimpa data materi.', 'error');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            });
         });
 
         // 4. INPUT HAFALAN (GURU)
