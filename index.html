@@ -206,7 +206,7 @@
                             <tr>
                                 <th class="px-6 py-4 font-bold">NAMA SISWA</th>
                                 <th class="px-6 py-4 font-bold">KELAS</th>
-                                <th class="px-6 py-4 font-bold text-center">AKSI</th>
+                                <th class="px-6 py-4 font-bold text-center w-36">AKSI</th>
                             </tr>
                         </thead>
                         <tbody id="table-body-siswa" class="divide-y divide-gray-100">
@@ -255,7 +255,7 @@
                                 <th class="px-6 py-4 font-bold">KELAS</th>
                                 <th class="px-6 py-4 font-bold w-24">URUTAN</th>
                                 <th class="px-6 py-4 font-bold">NAMA MATERI</th>
-                                <th class="px-6 py-4 font-bold text-center w-28">AKSI</th>
+                                <th class="px-6 py-4 font-bold text-center w-36">AKSI</th>
                             </tr>
                         </thead>
                         <tbody id="table-body-materi" class="divide-y divide-gray-100">
@@ -269,38 +269,69 @@
         <div id="admin-tab-rekap" class="hidden space-y-4">
             <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi Laporan Hafalan</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Filter Kelas</label>
-                        <select id="filter-kelas-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white">
-                            <option value="">Semua Kelas</option>
-                            <option value="1 Abu Bakar">1 Abu Bakar</option>
-                            <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                            <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                            <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                            <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                            <option value="3 Imam Maliki">3 Imam Maliki</option>
-                            <option value="4 Imam Syafii">4 Imam Syafii</option>
-                            <option value="4 Imam Hambali">4 Imam Hambali</option>
-                            <option value="5 Imam Asyari">5 Imam Asyari</option>
-                            <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                            <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                            <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                        </select>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Section PDF Harian -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <h4 class="font-bold text-gray-800 text-sm border-b pb-1">1. Laporan Harian (PDF)</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600">Pilih Kelas</label>
+                            <select id="filter-kelas-pdf-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
+                                <option value="">Semua Kelas</option>
+                                <option value="1 Abu Bakar">1 Abu Bakar</option>
+                                <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                                <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                                <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                                <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                                <option value="3 Imam Maliki">3 Imam Maliki</option>
+                                <option value="4 Imam Syafii">4 Imam Syafii</option>
+                                <option value="4 Imam Hambali">4 Imam Hambali</option>
+                                <option value="5 Imam Asyari">5 Imam Asyari</option>
+                                <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                                <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                                <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600">Pilih Tanggal</label>
+                            <input type="date" id="filter-tanggal-pdf-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
+                        </div>
+                        <button id="btn-download-pdf-admin" class="w-full bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-red-700 flex items-center justify-center shadow text-sm">
+                            Download Laporan PDF
+                        </button>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Filter Tanggal</label>
-                        <input type="date" id="filter-tanggal-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white">
+
+                    <!-- Section Excel Bulanan (Arsip) -->
+                    <div class="bg-teal-50 p-4 rounded-xl border border-teal-200 space-y-3">
+                        <h4 class="font-bold text-teal-900 text-sm border-b border-teal-200 pb-1">2. Arsip Bulanan (Excel)</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-teal-800">Pilih Kelas</label>
+                            <select id="filter-kelas-excel-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
+                                <option value="">Semua Kelas</option>
+                                <option value="1 Abu Bakar">1 Abu Bakar</option>
+                                <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                                <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                                <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                                <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                                <option value="3 Imam Maliki">3 Imam Maliki</option>
+                                <option value="4 Imam Syafii">4 Imam Syafii</option>
+                                <option value="4 Imam Hambali">4 Imam Hambali</option>
+                                <option value="5 Imam Asyari">5 Imam Asyari</option>
+                                <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                                <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                                <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-teal-800">Pilih Bulan & Tahun</label>
+                            <input type="month" id="filter-bulan-excel-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
+                        </div>
+                        <button id="btn-download-excel-admin" class="w-full bg-teal-700 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-teal-800 flex items-center justify-center shadow text-sm">
+                            Download Excel Bulanan
+                        </button>
                     </div>
                 </div>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button id="btn-download-pdf-admin" class="flex-1 bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-red-700 flex items-center justify-center shadow">
-                        Download Laporan PDF
-                    </button>
-                    <button id="btn-download-excel-admin" class="flex-1 bg-teal-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-teal-700 flex items-center justify-center shadow">
-                        Download Laporan Excel
-                    </button>
-                </div>
+
             </div>
         </div>
 
@@ -337,6 +368,41 @@
                     </select>
                 </div>
                 <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Simpan Siswa</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT SISWA -->
+    <div id="modal-edit-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-800">Edit Data Siswa</h3>
+                <button onclick="closeModal('modal-edit-siswa')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
+            </div>
+            <form id="form-edit-siswa" class="space-y-4">
+                <input type="hidden" id="edit-siswa-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap Siswa</label>
+                    <input type="text" id="edit-siswa-nama" required class="mt-1 w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
+                    <select id="edit-siswa-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
+                        <option value="1 Abu Bakar">1 Abu Bakar</option>
+                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                        <option value="3 Imam Maliki">3 Imam Maliki</option>
+                        <option value="4 Imam Syafii">4 Imam Syafii</option>
+                        <option value="4 Imam Hambali">4 Imam Hambali</option>
+                        <option value="5 Imam Asyari">5 Imam Asyari</option>
+                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600">Update Siswa</button>
             </form>
         </div>
     </div>
@@ -380,12 +446,51 @@
         </div>
     </div>
 
+    <!-- MODAL EDIT MATERI -->
+    <div id="modal-edit-materi" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-800">Edit Materi Hafalan</h3>
+                <button onclick="closeModal('modal-edit-materi')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
+            </div>
+            <form id="form-edit-materi" class="space-y-4">
+                <input type="hidden" id="edit-materi-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nama Materi</label>
+                    <input type="text" id="edit-materi-nama" required class="mt-1 w-full px-3 py-2 border rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
+                    <select id="edit-materi-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
+                        <option value="1 Abu Bakar">1 Abu Bakar</option>
+                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                        <option value="3 Imam Maliki">3 Imam Maliki</option>
+                        <option value="4 Imam Syafii">4 Imam Syafii</option>
+                        <option value="4 Imam Hambali">4 Imam Hambali</option>
+                        <option value="5 Imam Asyari">5 Imam Asyari</option>
+                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nomor Urut</label>
+                    <input type="number" id="edit-materi-urut" required class="mt-1 w-full px-3 py-2 border rounded-lg">
+                </div>
+                <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600">Update Materi</button>
+            </form>
+        </div>
+    </div>
+
     <!-- SCRIPT LOGIKA APLIKASI -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, writeBatch } 
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, getDoc } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // CONFIG FIREBASE
@@ -411,14 +516,25 @@
         });
 
         // Tanggal Defaults
-        const today = new Date().toISOString().split('T')[0];
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        const currentMonth = now.toISOString().slice(0, 7); // YYYY-MM
+
         document.getElementById('input-tanggal').value = today;
         document.getElementById('filter-tanggal-guru').value = today;
-        document.getElementById('filter-tanggal-admin').value = today;
+        document.getElementById('filter-tanggal-pdf-admin').value = today;
+        document.getElementById('filter-bulan-excel-admin').value = currentMonth;
 
         window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
         const showLoading = (msg) => Swal.fire({title: msg, allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+
+        // Utility Format Tanggal Indonesia
+        function formatTanggalIndo(dateStr) {
+            if(!dateStr) return "-";
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
 
         // Tab Switch Admin
         window.switchAdminTab = (tabName) => {
@@ -467,7 +583,7 @@
                 if (role === "Administrator") {
                     guruPage.classList.add('hidden');
                     adminPage.classList.remove('hidden');
-                    loadMateriTable(); // Default ke tab materi
+                    loadMateriTable();
                 } else {
                     adminPage.classList.add('hidden');
                     guruPage.classList.remove('hidden');
@@ -509,28 +625,31 @@
             });
         });
 
-        // 2. KELOLA SISWA (ADMIN)
+        // 2. KELOLA SISWA (ADMIN - CRUD COMPLETE)
+        let siswaMasterData = [];
+
         async function loadSiswaTable() {
             const tbody = document.getElementById('table-body-siswa');
             tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6">Memuat data...</td></tr>';
             try {
                 const snap = await getDocs(collection(db, "students"));
                 tbody.innerHTML = '';
-                let siswaList = [];
-                snap.forEach(doc => siswaList.push({ id: doc.id, ...doc.data() }));
-                siswaList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
+                siswaMasterData = [];
+                snap.forEach(doc => siswaMasterData.push({ id: doc.id, ...doc.data() }));
+                siswaMasterData.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
 
-                if(siswaList.length === 0) {
+                if(siswaMasterData.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-400">Belum ada data siswa.</td></tr>';
                     return;
                 }
-                siswaList.forEach(data => {
+                siswaMasterData.forEach(data => {
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4 font-medium text-gray-800">${data.nama}</td>
                             <td class="px-6 py-4 text-gray-600">${data.kelas}</td>
                             <td class="px-6 py-4 text-center">
-                                <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-xs font-semibold">Hapus</button>
+                                <button onclick="editSiswa('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
+                                <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
                             </td>
                         </tr>`;
                 });
@@ -547,6 +666,27 @@
             await addDoc(collection(db, "students"), { nama, kelas, hafalan_terakhir: "-", status_terakhir: "-" });
             document.getElementById('form-add-siswa').reset();
             closeModal('modal-add-siswa');
+            Swal.close();
+            loadSiswaTable();
+        });
+
+        window.editSiswa = (id) => {
+            const s = siswaMasterData.find(item => item.id === id);
+            if(!s) return;
+            document.getElementById('edit-siswa-id').value = s.id;
+            document.getElementById('edit-siswa-nama').value = s.nama;
+            document.getElementById('edit-siswa-kelas').value = s.kelas;
+            openModal('modal-edit-siswa');
+        };
+
+        document.getElementById('form-edit-siswa').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-siswa-id').value;
+            const nama = document.getElementById('edit-siswa-nama').value;
+            const kelas = document.getElementById('edit-siswa-kelas').value;
+            showLoading('Mengubah...');
+            await updateDoc(doc(db, "students", id), { nama, kelas });
+            closeModal('modal-edit-siswa');
             Swal.close();
             loadSiswaTable();
         });
@@ -587,7 +727,9 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // 3. KELOLA MATERI (ADMIN) - DILENGKAPIFITUR NIMPA/OVERWRITE
+        // 3. KELOLA MATERI (ADMIN - CRUD COMPLETE & OVERWRITE)
+        let materiMasterData = [];
+
         async function loadMateriTable() {
             const tbody = document.getElementById('table-body-materi');
             const filterKelas = document.getElementById('filter-materi-tabel').value;
@@ -595,27 +737,28 @@
             try {
                 const snap = await getDocs(collection(db, "materi_list"));
                 tbody.innerHTML = '';
-                let materiList = [];
+                materiMasterData = [];
                 snap.forEach(doc => {
                     const d = doc.data();
-                    if(filterKelas === "Semua" || d.kelas === filterKelas) {
-                        materiList.push({ id: doc.id, ...d });
-                    }
+                    materiMasterData.push({ id: doc.id, ...d });
                 });
-                materiList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.urutan - b.urutan);
 
-                if(materiList.length === 0) {
+                let displayList = materiMasterData.filter(m => filterKelas === "Semua" || m.kelas === filterKelas);
+                displayList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.urutan - b.urutan);
+
+                if(displayList.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Belum ada data materi.</td></tr>';
                     return;
                 }
-                materiList.forEach(data => {
+                displayList.forEach(data => {
                     tbody.innerHTML += `
                         <tr class="hover:bg-slate-50 transition">
                             <td class="px-6 py-4 font-medium text-gray-800">${data.kelas}</td>
                             <td class="px-6 py-4 text-gray-600">${data.urutan}</td>
                             <td class="px-6 py-4 font-medium text-gray-800">${data.nama_materi}</td>
                             <td class="px-6 py-4 text-center">
-                                <button onclick="hapusMateri('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-xs font-semibold">Hapus</button>
+                                <button onclick="editMateri('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
+                                <button onclick="hapusMateri('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
                             </td>
                         </tr>`;
                 });
@@ -639,6 +782,29 @@
             loadMateriTable();
         });
 
+        window.editMateri = (id) => {
+            const m = materiMasterData.find(item => item.id === id);
+            if(!m) return;
+            document.getElementById('edit-materi-id').value = m.id;
+            document.getElementById('edit-materi-nama').value = m.nama_materi;
+            document.getElementById('edit-materi-kelas').value = m.kelas;
+            document.getElementById('edit-materi-urut').value = m.urutan;
+            openModal('modal-edit-materi');
+        };
+
+        document.getElementById('form-edit-materi').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-materi-id').value;
+            const nama = document.getElementById('edit-materi-nama').value;
+            const kelas = document.getElementById('edit-materi-kelas').value;
+            const urut = Number(document.getElementById('edit-materi-urut').value);
+            showLoading('Mengubah...');
+            await updateDoc(doc(db, "materi_list", id), { nama_materi: nama, kelas: kelas, urutan: urut });
+            closeModal('modal-edit-materi');
+            Swal.close();
+            loadMateriTable();
+        });
+
         window.hapusMateri = async (id) => {
             if(confirm('Hapus materi ini?')) {
                 await deleteDoc(doc(db, "materi_list", id));
@@ -646,7 +812,7 @@
             }
         };
 
-        // IMPOR EXCEL MATERI DENGAN LOGIKA PENIMPAAN DATA LAMA
+        // Impor Excel Materi (NIMPA)
         document.getElementById('file-import-materi').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -675,7 +841,6 @@
                         const sheet = workbook.Sheets[workbook.SheetNames[0]];
                         const json = XLSX.utils.sheet_to_json(sheet);
 
-                        // 1. Hapus Seluruh Data Materi Lama
                         const oldSnap = await getDocs(collection(db, "materi_list"));
                         const deletePromises = [];
                         oldSnap.forEach((docItem) => {
@@ -683,7 +848,6 @@
                         });
                         await Promise.all(deletePromises);
 
-                        // 2. Unggah Data Materi Baru
                         let count = 0;
                         for(let row of json) {
                             const namaMat = row['Nama Materi'] || row['materi'] || row['Nama'];
@@ -840,82 +1004,155 @@
         document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lancar"));
         document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Tidak Lancar"));
 
-        // 5. LAPORAN & EKSPOR
-        async function fetchLaporanData(fKelas, fTgl) {
-            let q = query(collection(db, "hafalan_records"), where("tanggal", "==", fTgl));
-            if(fKelas) q = query(collection(db, "hafalan_records"), where("tanggal", "==", fTgl), where("kelas", "==", fKelas));
-            
-            showLoading('Mengambil Laporan...');
-            const snap = await getDocs(q);
-            let data = [];
-            let i = 1;
-            snap.forEach(doc => {
-                const dt = doc.data();
-                data.push([dt.tanggal, i++, dt.nama_siswa, dt.kelas, dt.materi_hafalan, dt.status_evaluasi]);
-            });
-            Swal.close();
-            return { data, tanggal: fTgl, kelas: fKelas || "Semua Kelas" };
-        }
-
-        function generatePDF({data, tanggal, kelas}) {
-            if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk tanggal/kelas tersebut.', 'info');
+        // 5. EKSPOR LAPORAN HARIAN (PDF) & BULANAN (EXCEL)
+        
+        // Generasi PDF Resmi dengan KOP Rata Tengah & Footer
+        function generateOfficialPDF(data, tanggal, kelas) {
+            if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data hafalan untuk tanggal/kelas tersebut.', 'info');
             
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            doc.setFontSize(14);
-            doc.text("Laporan Hafalan E-Tahsin MI Salafiyah Wareng", 14, 15);
-            doc.setFontSize(10);
-            doc.text(`Tanggal: ${tanggal} | Kelas: ${kelas}`, 14, 22);
+            const pageWidth = doc.internal.pageSize.getWidth();
 
-            const bodyPDF = data.map(row => [row[1], row[2], row[3], row[4], row[5]]);
+            // KOP LAPORAN (RATA TENGAH)
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.setTextColor(13, 148, 136); // Warna Hijau Teal
+            doc.text("E Tahsin - Monitoring Hafalan Siswa", pageWidth / 2, 16, { align: "center" });
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.setTextColor(0, 0, 0); // Warna Hitam
+            doc.text("MI Salafiyah Wareng", pageWidth / 2, 23, { align: "center" });
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(50, 50, 50);
+            const infoText = `Kelas: ${kelas}  |  Hari dan Tanggal: ${formatTanggalIndo(tanggal)}`;
+            doc.text(infoText, pageWidth / 2, 30, { align: "center" });
+
+            // Garis Pembatas Kop
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(0.5);
+            doc.line(14, 34, pageWidth - 14, 34);
+
+            // TABEL DATA
+            const bodyPDF = data.map((row, idx) => [idx + 1, row.nama_siswa, row.kelas, row.materi_hafalan, row.status_evaluasi]);
 
             doc.autoTable({
-                startY: 28,
-                head: [['No', 'Nama Siswa', 'Kelas', 'Materi', 'Keterangan']],
+                startY: 38,
+                head: [['No', 'Nama Siswa', 'Kelas', 'Materi Hafalan', 'Keterangan']],
                 body: bodyPDF,
                 theme: 'grid',
-                headStyles: { fillColor: [13, 148, 136] }
+                headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 9, cellPadding: 2.5 },
+                columnStyles: {
+                    0: { cellWidth: 12, halign: 'center' },
+                    1: { cellWidth: 50 },
+                    2: { cellWidth: 35 },
+                    3: { cellWidth: 55 },
+                    4: { cellWidth: 30, halign: 'center' }
+                }
             });
 
-            doc.save(`Laporan_Hafalan_${tanggal}.pdf`);
+            // FOOTER RESMI
+            const finalY = doc.lastAutoTable.finalY + 12;
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const footerY = Math.max(finalY, pageHeight - 20);
+
+            doc.setDrawColor(220, 220, 220);
+            doc.setLineWidth(0.3);
+            doc.line(14, footerY - 5, pageWidth - 14, footerY - 5);
+
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8);
+            doc.setTextColor(120, 120, 120);
+            doc.text("Dokumen ini dicetak secara otomatis melalui Sistem E-Tahsin MI Salafiyah Wareng.", 14, footerY);
+            
+            const nowPrint = new Date().toLocaleString('id-ID');
+            doc.text(`Dicetak pada: ${nowPrint}`, pageWidth - 14, footerY, { align: "right" });
+
+            doc.save(`Laporan_Hafalan_${kelas.replace(/\s+/g, '_')}_${tanggal}.pdf`);
         }
 
-        document.getElementById('btn-download-pdf-admin').addEventListener('click', async () => {
-            const k = document.getElementById('filter-kelas-admin').value;
-            const t = document.getElementById('filter-tanggal-admin').value;
-            const result = await fetchLaporanData(k, t);
-            generatePDF(result);
+        // Action PDF Guru
+        document.getElementById('btn-download-pdf-guru').addEventListener('click', async () => {
+            const k = document.getElementById('filter-kelas-guru').value;
+            const t = document.getElementById('filter-tanggal-guru').value;
+            
+            showLoading('Mengunduh PDF...');
+            let q = query(collection(db, "hafalan_records"), where("tanggal", "==", t));
+            if(k) q = query(collection(db, "hafalan_records"), where("tanggal", "==", t), where("kelas", "==", k));
+            
+            const snap = await getDocs(q);
+            let records = [];
+            snap.forEach(d => records.push(d.data()));
+            records.sort((a,b) => a.nama_siswa.localeCompare(b.nama_siswa));
+            Swal.close();
+            
+            generateOfficialPDF(records, t, k || "Semua Kelas");
         });
 
+        // Action PDF Admin
+        document.getElementById('btn-download-pdf-admin').addEventListener('click', async () => {
+            const k = document.getElementById('filter-kelas-pdf-admin').value;
+            const t = document.getElementById('filter-tanggal-pdf-admin').value;
+            
+            showLoading('Mengunduh PDF...');
+            let q = query(collection(db, "hafalan_records"), where("tanggal", "==", t));
+            if(k) q = query(collection(db, "hafalan_records"), where("tanggal", "==", t), where("kelas", "==", k));
+            
+            const snap = await getDocs(q);
+            let records = [];
+            snap.forEach(d => records.push(d.data()));
+            records.sort((a,b) => a.nama_siswa.localeCompare(b.nama_siswa));
+            Swal.close();
+            
+            generateOfficialPDF(records, t, k || "Semua Kelas");
+        });
+
+        // Action Excel Bulanan Admin (Arsip)
         document.getElementById('btn-download-excel-admin').addEventListener('click', async () => {
-            const k = document.getElementById('filter-kelas-admin').value;
-            const t = document.getElementById('filter-tanggal-admin').value;
-            const { data, tanggal } = await fetchLaporanData(k, t);
-            
-            if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk tanggal/kelas tersebut.', 'info');
-            
-            const excelData = data.map(row => ({
-                "Tanggal": row[0],
-                "No": row[1],
-                "Nama Siswa": row[2],
-                "Kelas": row[3],
-                "Materi Hafalan": row[4],
-                "Keterangan": row[5]
+            const k = document.getElementById('filter-kelas-excel-admin').value;
+            const monthVal = document.getElementById('filter-bulan-excel-admin').value; // Format: YYYY-MM
+
+            if(!monthVal) return Swal.fire('Pilih Bulan', 'Harap pilih bulan dan tahun terlebih dahulu.', 'warning');
+
+            showLoading('Menyiapkan Arsip Excel Bulanan...');
+            const snap = await getDocs(collection(db, "hafalan_records"));
+            let records = [];
+            snap.forEach(d => {
+                const dt = d.data();
+                if(dt.tanggal && dt.tanggal.startsWith(monthVal)) {
+                    if(!k || dt.kelas === k) {
+                        records.push(dt);
+                    }
+                }
+            });
+
+            records.sort((a, b) => a.tanggal.localeCompare(b.tanggal) || a.kelas.localeCompare(b.kelas) || a.nama_siswa.localeCompare(b.nama_siswa));
+
+            if(records.length === 0) {
+                Swal.close();
+                return Swal.fire('Kosong', 'Tidak ada data hafalan pada bulan tersebut.', 'info');
+            }
+
+            // Susunan Kolom Excel Presisi
+            const excelData = records.map((row, idx) => ({
+                "No": idx + 1,
+                "Tanggal": row.tanggal,
+                "Nama Siswa": row.nama_siswa,
+                "Kelas": row.kelas,
+                "Materi Hafalan": row.materi_hafalan,
+                "Keterangan": row.status_evaluasi
             }));
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Hafalan");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Bulanan");
             
-            XLSX.writeFile(workbook, `Laporan_Hafalan_${tanggal}.xlsx`);
-        });
-
-        document.getElementById('btn-download-pdf-guru').addEventListener('click', async () => {
-            const k = document.getElementById('filter-kelas-guru').value;
-            const t = document.getElementById('filter-tanggal-guru').value;
-            const result = await fetchLaporanData(k, t);
-            generatePDF(result);
+            Swal.close();
+            XLSX.writeFile(workbook, `Arsip_Hafalan_${k || "Semua_Kelas"}_${monthVal}.xlsx`);
         });
 
     </script>
