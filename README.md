@@ -1,2 +1,2 @@
-#E Tahsin
+E Tahsin
 Pencatat Hafalan Harian Siswa
