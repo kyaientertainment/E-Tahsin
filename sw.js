@@ -1,4 +1,4 @@
-const CACHE_NAME = 'e-tahsin-v1';
+const CACHE_NAME = 'e-tahsin-v2';
 const urlsToCache = [
   './',
   './index.html',

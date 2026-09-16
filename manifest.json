@@ -3,11 +3,11 @@
   "short_name": "E-Tahsin",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#0d9488",
+  "background_color": "#1e293b",
+  "theme_color": "#1e293b",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2904/2904843.png",
       "sizes": "512x512",
       "type": "image/png"
     }
