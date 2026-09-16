@@ -4,15 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Tahsin - MI Salafiyah Wareng</title>
+
+    <!-- PWA Meta Tags & External Manifest Link -->
+    <meta name="theme-color" content="#0d9488">
+    <meta name="description" content="Sistem Pencatatan dan Monitoring Hafalan Siswa MI Salafiyah Wareng">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2991/2991148.png">
+    <link rel="manifest" href="./manifest.json">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert2 untuk Notifikasi -->
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- jsPDF & AutoTable untuk PDF -->
+    <!-- jsPDF & AutoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <!-- SheetJS untuk Export/Import Excel -->
+    <!-- SheetJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Chart.js untuk Grafik Statistik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         .hidden { display: none !important; }
@@ -24,8 +33,9 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-gray-800">
+<body class="bg-slate-50 font-sans text-gray-800 min-h-screen flex flex-col justify-between">
 
+    <div>
     <!-- HALAMAN LOGIN -->
     <div id="login-page" class="min-h-screen flex items-center justify-center p-4">
         <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
@@ -124,7 +134,12 @@
                 </div>
 
                 <div id="info-siswa" class="hidden bg-teal-50 p-3 rounded-lg border border-teal-200 text-sm">
-                    <p class="text-teal-900"><strong>Riwayat Terakhir:</strong> <span id="txt-riwayat">-</span> (<span id="txt-status">-</span>)</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-teal-900"><strong>Riwayat Terakhir:</strong> <span id="txt-riwayat">-</span> (<span id="txt-status">-</span>)</p>
+                        <span id="badge-prestasi-guru" class="hidden bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300">
+                            🌟 3x Lancar Berturut-turut
+                        </span>
+                    </div>
                     <p class="text-teal-700 mt-1"><strong>Target Hari Ini:</strong> <span id="txt-target">-</span></p>
                 </div>
 
@@ -174,29 +189,74 @@
         </div>
     </div>
 
-    <!-- HALAMAN ADMINISTRATOR -->
+    <!-- HALAMAN ADMINISTRATOR METRIC DASHBOARD -->
     <div id="admin-page" class="hidden max-w-6xl mx-auto mt-6 px-4 pb-12 space-y-6">
         <div class="bg-slate-800 text-white p-6 rounded-2xl shadow-md">
             <h2 class="text-2xl font-bold">Panel Kontrol Administrator</h2>
-            <p class="text-xs sm:text-sm text-slate-300 mt-1">Pengelolaan Master Data Siswa, Materi & Rekapitulasi</p>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">Pengelolaan Master Data Siswa, Materi, Statistik & Rekapitulasi</p>
         </div>
 
-        <div class="border-b border-gray-200 flex gap-8 text-sm sm:text-base font-semibold text-gray-500">
+        <!-- TAB NAVIGASI -->
+        <div class="border-b border-gray-200 flex flex-wrap gap-4 sm:gap-8 text-sm sm:text-base font-semibold text-gray-500">
+            <button id="tab-btn-dashboard" onclick="switchAdminTab('dashboard')" class="pb-3 tab-active transition">Dashboard</button>
             <button id="tab-btn-siswa" onclick="switchAdminTab('siswa')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Data Siswa</button>
-            <button id="tab-btn-materi" onclick="switchAdminTab('materi')" class="pb-3 tab-active transition">Materi Hafalan</button>
+            <button id="tab-btn-materi" onclick="switchAdminTab('materi')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Materi Hafalan</button>
             <button id="tab-btn-rekap" onclick="switchAdminTab('rekap')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Rekap & Ekspor</button>
         </div>
 
-        <!-- TAB DATA SISWA -->
+        <!-- TAB 0: DASHBOARD STATISTIK -->
+        <div id="admin-tab-dashboard" class="space-y-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-xs font-semibold text-gray-500 uppercase">Total Siswa</p>
+                    <p id="stat-total-siswa" class="text-2xl font-bold text-teal-700 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-xs font-semibold text-gray-500 uppercase">Total Materi</p>
+                    <p id="stat-total-materi" class="text-2xl font-bold text-blue-700 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-xs font-semibold text-gray-500 uppercase">Setoran Bulan Ini</p>
+                    <p id="stat-total-setoran" class="text-2xl font-bold text-purple-700 mt-1">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
+                    <p class="text-xs font-semibold text-gray-500 uppercase">Tingkat Kelancaran</p>
+                    <p id="stat-persen-lancar" class="text-2xl font-bold text-emerald-600 mt-1">0%</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-2 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                    <h4 class="text-sm font-bold text-gray-700 mb-4">Statistik Evaluasi Hafalan Per Kelas (Bulan Ini)</h4>
+                    <div class="relative h-64">
+                        <canvas id="chart-kelas-bar"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+                    <h4 class="text-sm font-bold text-gray-700 mb-4">Rasio Kelancaran Overall</h4>
+                    <div class="relative h-64 flex items-center justify-center">
+                        <canvas id="chart-rasio-pie"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 1: DATA SISWA -->
         <div id="admin-tab-siswa" class="hidden space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between gap-3">
-                <button onclick="openModal('modal-add-siswa')" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
-                    + Tambah Siswa Manual
-                </button>
-                <label class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer">
-                    📥 Import Excel Siswa
-                    <input type="file" id="file-import-siswa" accept=".xlsx, .xls, .csv" class="hidden">
-                </label>
+            <div class="flex flex-col md:flex-row justify-between gap-3">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <button onclick="openModal('modal-add-siswa')" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
+                        + Tambah Siswa Manual
+                    </button>
+                    <label class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer">
+                        📥 Import Excel Siswa
+                        <input type="file" id="file-import-siswa" accept=".xlsx, .xls, .csv" class="hidden">
+                    </label>
+                </div>
+
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="search-siswa-input" placeholder="🔍 Cari nama siswa..." class="w-full px-4 py-2 text-sm border rounded-full focus:ring-teal-500 bg-white">
+                </div>
             </div>
 
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -206,6 +266,7 @@
                             <tr>
                                 <th class="px-6 py-4 font-bold">NAMA SISWA</th>
                                 <th class="px-6 py-4 font-bold">KELAS</th>
+                                <th class="px-6 py-4 font-bold text-center">PRESTASI</th>
                                 <th class="px-6 py-4 font-bold text-center w-36">AKSI</th>
                             </tr>
                         </thead>
@@ -216,15 +277,17 @@
             </div>
         </div>
 
-        <!-- TAB MATERI HAFALAN -->
-        <div id="admin-tab-materi" class="space-y-4">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-                <button onclick="openModal('modal-add-materi')" class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
+        <!-- TAB 2: MATERI HAFALAN -->
+        <div id="admin-tab-materi" class="hidden space-y-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-3">
+                <button onclick="openModal('modal-add-materi')" class="w-full md:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
                     + Tambah Materi Manual
                 </button>
                 
-                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <select id="filter-materi-tabel" class="px-3 py-2 border rounded-lg text-sm bg-white">
+                <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto justify-end">
+                    <input type="text" id="search-materi-input" placeholder="🔍 Cari nama materi..." class="w-full sm:w-48 px-3 py-2 text-sm border rounded-full bg-white">
+
+                    <select id="filter-materi-tabel" class="w-full sm:w-auto px-3 py-2 border rounded-lg text-sm bg-white">
                         <option value="Semua">Semua Kelas</option>
                         <option value="1 Abu Bakar">1 Abu Bakar</option>
                         <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
@@ -240,7 +303,7 @@
                         <option value="6 Imam Junaidi">6 Imam Junaidi</option>
                     </select>
 
-                    <label class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
+                    <label class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
                         📥 Import Excel Materi
                         <input type="file" id="file-import-materi" accept=".xlsx, .xls, .csv" class="hidden">
                     </label>
@@ -265,13 +328,12 @@
             </div>
         </div>
 
-        <!-- TAB REKAP & EKSPOR -->
+        <!-- TAB 3: REKAP & EKSPOR -->
         <div id="admin-tab-rekap" class="hidden space-y-4">
             <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi Laporan Hafalan</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Section PDF Harian -->
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
                         <h4 class="font-bold text-gray-800 text-sm border-b pb-1">1. Laporan Harian (PDF)</h4>
                         <div>
@@ -301,7 +363,6 @@
                         </button>
                     </div>
 
-                    <!-- Section Excel Bulanan (Arsip) -->
                     <div class="bg-teal-50 p-4 rounded-xl border border-teal-200 space-y-3">
                         <h4 class="font-bold text-teal-900 text-sm border-b border-teal-200 pb-1">2. Arsip Bulanan (Excel)</h4>
                         <div>
@@ -337,7 +398,7 @@
 
     </div>
 
-    <!-- MODAL TAMBAH SISWA MANUAL -->
+    <!-- MODAL EDIT/TAMBAH -->
     <div id="modal-add-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -372,7 +433,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT SISWA -->
     <div id="modal-edit-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -407,7 +467,6 @@
         </div>
     </div>
 
-    <!-- MODAL TAMBAH MATERI MANUAL -->
     <div id="modal-add-materi" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -446,7 +505,6 @@
         </div>
     </div>
 
-    <!-- MODAL EDIT MATERI -->
     <div id="modal-edit-materi" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -485,12 +543,30 @@
         </div>
     </div>
 
-    <!-- SCRIPT LOGIKA APLIKASI -->
+    </div>
+
+    <!-- FOOTER RESMI APLIKASI -->
+    <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-10">
+        <p>© 2026 E-Tahsin MI Salafiyah Wareng. All Rights Reserved.</p>
+    </footer>
+
+    <!-- REGISTRASI SERVICE WORKER UNTUK PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker terdaftar:', reg.scope))
+                    .catch(err => console.error('Registrasi SW gagal:', err));
+            });
+        }
+    </script>
+
+    <!-- SCRIPT LOGIKA UTAMA FIREBASE & APP -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, getDoc } 
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy, limit } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // CONFIG FIREBASE
@@ -518,7 +594,7 @@
         // Tanggal Defaults
         const now = new Date();
         const today = now.toISOString().split('T')[0];
-        const currentMonth = now.toISOString().slice(0, 7); // YYYY-MM
+        const currentMonth = now.toISOString().slice(0, 7);
 
         document.getElementById('input-tanggal').value = today;
         document.getElementById('filter-tanggal-guru').value = today;
@@ -529,7 +605,6 @@
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
         const showLoading = (msg) => Swal.fire({title: msg, allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-        // Utility Format Tanggal Indonesia
         function formatTanggalIndo(dateStr) {
             if(!dateStr) return "-";
             const d = new Date(dateStr);
@@ -538,15 +613,21 @@
 
         // Tab Switch Admin
         window.switchAdminTab = (tabName) => {
+            document.getElementById('admin-tab-dashboard').classList.add('hidden');
             document.getElementById('admin-tab-siswa').classList.add('hidden');
             document.getElementById('admin-tab-materi').classList.add('hidden');
             document.getElementById('admin-tab-rekap').classList.add('hidden');
             
+            document.getElementById('tab-btn-dashboard').classList.remove('tab-active');
             document.getElementById('tab-btn-siswa').classList.remove('tab-active');
             document.getElementById('tab-btn-materi').classList.remove('tab-active');
             document.getElementById('tab-btn-rekap').classList.remove('tab-active');
 
-            if(tabName === 'siswa') {
+            if(tabName === 'dashboard') {
+                document.getElementById('admin-tab-dashboard').classList.remove('hidden');
+                document.getElementById('tab-btn-dashboard').classList.add('tab-active');
+                renderDashboardCharts();
+            } else if(tabName === 'siswa') {
                 document.getElementById('admin-tab-siswa').classList.remove('hidden');
                 document.getElementById('tab-btn-siswa').classList.add('tab-active');
                 loadSiswaTable();
@@ -583,7 +664,7 @@
                 if (role === "Administrator") {
                     guruPage.classList.add('hidden');
                     adminPage.classList.remove('hidden');
-                    loadMateriTable();
+                    renderDashboardCharts();
                 } else {
                     adminPage.classList.add('hidden');
                     guruPage.classList.remove('hidden');
@@ -625,38 +706,90 @@
             });
         });
 
-        // 2. KELOLA SISWA (ADMIN - CRUD COMPLETE)
+        // 2. LOGIKA PRESTASI BADGE
+        async function checkStudentPrestasiBadge(studentName) {
+            try {
+                const q = query(
+                    collection(db, "hafalan_records"),
+                    where("nama_siswa", "==", studentName)
+                );
+                const snap = await getDocs(q);
+                let list = [];
+                snap.forEach(d => list.push(d.data()));
+                list.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+
+                if (list.length < 3) return false;
+                return list[0].status_evaluasi === "Lancar" && 
+                       list[1].status_evaluasi === "Lancar" && 
+                       list[2].status_evaluasi === "Lancar";
+            } catch (err) {
+                return false;
+            }
+        }
+
+        // 3. KELOLA SISWA (ADMIN)
         let siswaMasterData = [];
 
         async function loadSiswaTable() {
             const tbody = document.getElementById('table-body-siswa');
-            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6">Memuat data...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6">Memuat data...</td></tr>';
             try {
                 const snap = await getDocs(collection(db, "students"));
-                tbody.innerHTML = '';
                 siswaMasterData = [];
                 snap.forEach(doc => siswaMasterData.push({ id: doc.id, ...doc.data() }));
                 siswaMasterData.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
 
-                if(siswaMasterData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-gray-400">Belum ada data siswa.</td></tr>';
-                    return;
-                }
-                siswaMasterData.forEach(data => {
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="px-6 py-4 font-medium text-gray-800">${data.nama}</td>
-                            <td class="px-6 py-4 text-gray-600">${data.kelas}</td>
-                            <td class="px-6 py-4 text-center">
-                                <button onclick="editSiswa('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
-                                <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
-                            </td>
-                        </tr>`;
+                const allRecordsSnap = await getDocs(collection(db, "hafalan_records"));
+                let recordsMap = {};
+                allRecordsSnap.forEach(d => {
+                    const dt = d.data();
+                    if(!recordsMap[dt.nama_siswa]) recordsMap[dt.nama_siswa] = [];
+                    recordsMap[dt.nama_siswa].push(dt);
                 });
+
+                siswaMasterData.forEach(s => {
+                    let list = recordsMap[s.nama] || [];
+                    list.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+                    s.isPrestasi = (list.length >= 3 && list[0].status_evaluasi === "Lancar" && list[1].status_evaluasi === "Lancar" && list[2].status_evaluasi === "Lancar");
+                });
+
+                renderSiswaFilteredTable();
             } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-6 text-red-500">Gagal memuat data siswa.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-red-500">Gagal memuat data siswa.</td></tr>';
             }
         }
+
+        function renderSiswaFilteredTable() {
+            const tbody = document.getElementById('table-body-siswa');
+            const keyword = document.getElementById('search-siswa-input').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            let filtered = siswaMasterData.filter(s => s.nama.toLowerCase().includes(keyword) || s.kelas.toLowerCase().includes(keyword));
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Tidak ada data siswa ditemukan.</td></tr>';
+                return;
+            }
+
+            filtered.forEach(data => {
+                const badgeHtml = data.isPrestasi 
+                    ? `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap">🌟 3x Lancar</span>` 
+                    : `<span class="text-gray-400 text-xs">-</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-6 py-4 font-medium text-gray-800">${data.nama}</td>
+                        <td class="px-6 py-4 text-gray-600">${data.kelas}</td>
+                        <td class="px-6 py-4 text-center">${badgeHtml}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="editSiswa('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
+                            <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        document.getElementById('search-siswa-input').addEventListener('input', renderSiswaFilteredTable);
 
         document.getElementById('form-add-siswa').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -727,47 +860,54 @@
             reader.readAsArrayBuffer(file);
         });
 
-        // 3. KELOLA MATERI (ADMIN - CRUD COMPLETE & OVERWRITE)
+        // 4. KELOLA MATERI (ADMIN)
         let materiMasterData = [];
 
         async function loadMateriTable() {
             const tbody = document.getElementById('table-body-materi');
-            const filterKelas = document.getElementById('filter-materi-tabel').value;
             tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6">Memuat data...</td></tr>';
             try {
                 const snap = await getDocs(collection(db, "materi_list"));
-                tbody.innerHTML = '';
                 materiMasterData = [];
                 snap.forEach(doc => {
-                    const d = doc.data();
-                    materiMasterData.push({ id: doc.id, ...d });
+                    materiMasterData.push({ id: doc.id, ...doc.data() });
                 });
 
-                let displayList = materiMasterData.filter(m => filterKelas === "Semua" || m.kelas === filterKelas);
-                displayList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.urutan - b.urutan);
-
-                if(displayList.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Belum ada data materi.</td></tr>';
-                    return;
-                }
-                displayList.forEach(data => {
-                    tbody.innerHTML += `
-                        <tr class="hover:bg-slate-50 transition">
-                            <td class="px-6 py-4 font-medium text-gray-800">${data.kelas}</td>
-                            <td class="px-6 py-4 text-gray-600">${data.urutan}</td>
-                            <td class="px-6 py-4 font-medium text-gray-800">${data.nama_materi}</td>
-                            <td class="px-6 py-4 text-center">
-                                <button onclick="editMateri('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
-                                <button onclick="hapusMateri('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
-                            </td>
-                        </tr>`;
-                });
+                renderMateriFilteredTable();
             } catch (error) {
                 tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-red-500">Gagal memuat data materi.</td></tr>';
             }
         }
 
-        document.getElementById('filter-materi-tabel').addEventListener('change', loadMateriTable);
+        function renderMateriFilteredTable() {
+            const tbody = document.getElementById('table-body-materi');
+            const filterKelas = document.getElementById('filter-materi-tabel').value;
+            const keyword = document.getElementById('search-materi-input').value.toLowerCase();
+
+            let displayList = materiMasterData.filter(m => (filterKelas === "Semua" || m.kelas === filterKelas) && (m.nama_materi.toLowerCase().includes(keyword) || m.kelas.toLowerCase().includes(keyword)));
+            displayList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.urutan - b.urutan);
+
+            tbody.innerHTML = '';
+            if(displayList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Belum ada data materi.</td></tr>';
+                return;
+            }
+            displayList.forEach(data => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-6 py-4 font-medium text-gray-800">${data.kelas}</td>
+                        <td class="px-6 py-4 text-gray-600">${data.urutan}</td>
+                        <td class="px-6 py-4 font-medium text-gray-800">${data.nama_materi}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button onclick="editMateri('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
+                            <button onclick="hapusMateri('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        document.getElementById('filter-materi-tabel').addEventListener('change', renderMateriFilteredTable);
+        document.getElementById('search-materi-input').addEventListener('input', renderMateriFilteredTable);
 
         document.getElementById('form-add-materi').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -812,7 +952,6 @@
             }
         };
 
-        // Impor Excel Materi (NIMPA)
         document.getElementById('file-import-materi').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -875,7 +1014,80 @@
             });
         });
 
-        // 4. INPUT HAFALAN (GURU)
+        // 5. DASHBOARD CHART GENERATOR
+        let barChartInstance = null;
+        let pieChartInstance = null;
+
+        async function renderDashboardCharts() {
+            showLoading('Memuat Grafik & Statistik...');
+            try {
+                const snapSiswa = await getDocs(collection(db, "students"));
+                const snapMateri = await getDocs(collection(db, "materi_list"));
+                const snapRecords = await getDocs(collection(db, "hafalan_records"));
+
+                document.getElementById('stat-total-siswa').innerText = snapSiswa.size;
+                document.getElementById('stat-total-materi').innerText = snapMateri.size;
+
+                let monthRecords = [];
+                let lancarCount = 0;
+                let classStat = {};
+
+                snapRecords.forEach(d => {
+                    const dt = d.data();
+                    if (dt.tanggal && dt.tanggal.startsWith(currentMonth)) {
+                        monthRecords.push(dt);
+                        if (dt.status_evaluasi === "Lancar") lancarCount++;
+
+                        if (!classStat[dt.kelas]) classStat[dt.kelas] = { lancar: 0, ulang: 0 };
+                        if (dt.status_evaluasi === "Lancar") classStat[dt.kelas].lancar++;
+                        else classStat[dt.kelas].ulang++;
+                    }
+                });
+
+                document.getElementById('stat-total-setoran').innerText = monthRecords.length;
+                const percent = monthRecords.length > 0 ? Math.round((lancarCount / monthRecords.length) * 100) : 0;
+                document.getElementById('stat-persen-lancar').innerText = `${percent}%`;
+
+                const classes = Object.keys(classStat);
+                const dataLancar = classes.map(c => classStat[c].lancar);
+                const dataUlang = classes.map(c => classStat[c].ulang);
+
+                if(barChartInstance) barChartInstance.destroy();
+                const ctxBar = document.getElementById('chart-kelas-bar').getContext('2d');
+                barChartInstance = new Chart(ctxBar, {
+                    type: 'bar',
+                    data: {
+                        labels: classes.length > 0 ? classes : ['Belum Ada Data'],
+                        datasets: [
+                            { label: 'Lancar', data: dataLancar, backgroundColor: '#0d9488' },
+                            { label: 'Tidak Lancar', data: dataUlang, backgroundColor: '#f59e0b' }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                if(pieChartInstance) pieChartInstance.destroy();
+                const ctxPie = document.getElementById('chart-rasio-pie').getContext('2d');
+                pieChartInstance = new Chart(ctxPie, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Lancar', 'Tidak Lancar'],
+                        datasets: [{
+                            data: [lancarCount, monthRecords.length - lancarCount],
+                            backgroundColor: ['#10b981', '#f59e0b']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+
+                Swal.close();
+            } catch (err) {
+                console.error(err);
+                Swal.close();
+            }
+        }
+
+        // 6. INPUT HAFALAN (GURU)
         let studentsData = [];
         let materiData = [];
 
@@ -910,10 +1122,11 @@
             materiData.forEach(m => selMateri.innerHTML += `<option value="${m.nama_materi}" data-urut="${m.urutan}">${m.urutan}. ${m.nama_materi}</option>`);
         });
 
-        document.getElementById('select-siswa').addEventListener('change', (e) => {
+        document.getElementById('select-siswa').addEventListener('change', async (e) => {
             const studentId = e.target.value;
             const selMateri = document.getElementById('select-materi');
             const infoSiswa = document.getElementById('info-siswa');
+            const badgeGuru = document.getElementById('badge-prestasi-guru');
             
             if(!studentId) {
                 infoSiswa.classList.add('hidden');
@@ -924,6 +1137,10 @@
             const student = studentsData.find(s => s.id === studentId);
             document.getElementById('txt-riwayat').innerText = student.hafalan_terakhir;
             document.getElementById('txt-status').innerText = student.status_terakhir;
+
+            const hasBadge = await checkStudentPrestasiBadge(student.nama);
+            if(hasBadge) badgeGuru.classList.remove('hidden');
+            else badgeGuru.classList.add('hidden');
 
             let targetText = "Materi Awal";
             if(student.hafalan_terakhir !== "-") {
@@ -1004,9 +1221,7 @@
         document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lancar"));
         document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Tidak Lancar"));
 
-        // 5. EKSPOR LAPORAN HARIAN (PDF) & BULANAN (EXCEL)
-        
-        // Generasi PDF Resmi dengan KOP Rata Tengah & Footer
+        // 7. EKSPOR LAPORAN
         function generateOfficialPDF(data, tanggal, kelas) {
             if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data hafalan untuk tanggal/kelas tersebut.', 'info');
             
@@ -1014,15 +1229,14 @@
             const doc = new jsPDF();
             const pageWidth = doc.internal.pageSize.getWidth();
 
-            // KOP LAPORAN (RATA TENGAH)
             doc.setFont("helvetica", "bold");
             doc.setFontSize(16);
-            doc.setTextColor(13, 148, 136); // Warna Hijau Teal
+            doc.setTextColor(13, 148, 136);
             doc.text("E Tahsin - Monitoring Hafalan Siswa", pageWidth / 2, 16, { align: "center" });
 
             doc.setFont("helvetica", "bold");
             doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0); // Warna Hitam
+            doc.setTextColor(0, 0, 0);
             doc.text("MI Salafiyah Wareng", pageWidth / 2, 23, { align: "center" });
 
             doc.setFont("helvetica", "normal");
@@ -1031,12 +1245,10 @@
             const infoText = `Kelas: ${kelas}  |  Hari dan Tanggal: ${formatTanggalIndo(tanggal)}`;
             doc.text(infoText, pageWidth / 2, 30, { align: "center" });
 
-            // Garis Pembatas Kop
             doc.setDrawColor(200, 200, 200);
             doc.setLineWidth(0.5);
             doc.line(14, 34, pageWidth - 14, 34);
 
-            // TABEL DATA
             const bodyPDF = data.map((row, idx) => [idx + 1, row.nama_siswa, row.kelas, row.materi_hafalan, row.status_evaluasi]);
 
             doc.autoTable({
@@ -1055,7 +1267,6 @@
                 }
             });
 
-            // FOOTER RESMI
             const finalY = doc.lastAutoTable.finalY + 12;
             const pageHeight = doc.internal.pageSize.getHeight();
             const footerY = Math.max(finalY, pageHeight - 20);
@@ -1075,7 +1286,6 @@
             doc.save(`Laporan_Hafalan_${kelas.replace(/\s+/g, '_')}_${tanggal}.pdf`);
         }
 
-        // Action PDF Guru
         document.getElementById('btn-download-pdf-guru').addEventListener('click', async () => {
             const k = document.getElementById('filter-kelas-guru').value;
             const t = document.getElementById('filter-tanggal-guru').value;
@@ -1093,7 +1303,6 @@
             generateOfficialPDF(records, t, k || "Semua Kelas");
         });
 
-        // Action PDF Admin
         document.getElementById('btn-download-pdf-admin').addEventListener('click', async () => {
             const k = document.getElementById('filter-kelas-pdf-admin').value;
             const t = document.getElementById('filter-tanggal-pdf-admin').value;
@@ -1111,10 +1320,9 @@
             generateOfficialPDF(records, t, k || "Semua Kelas");
         });
 
-        // Action Excel Bulanan Admin (Arsip)
         document.getElementById('btn-download-excel-admin').addEventListener('click', async () => {
             const k = document.getElementById('filter-kelas-excel-admin').value;
-            const monthVal = document.getElementById('filter-bulan-excel-admin').value; // Format: YYYY-MM
+            const monthVal = document.getElementById('filter-bulan-excel-admin').value;
 
             if(!monthVal) return Swal.fire('Pilih Bulan', 'Harap pilih bulan dan tahun terlebih dahulu.', 'warning');
 
@@ -1137,7 +1345,6 @@
                 return Swal.fire('Kosong', 'Tidak ada data hafalan pada bulan tersebut.', 'info');
             }
 
-            // Susunan Kolom Excel Presisi
             const excelData = records.map((row, idx) => ({
                 "No": idx + 1,
                 "Tanggal": row.tanggal,
