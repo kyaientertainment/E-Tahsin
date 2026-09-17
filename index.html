@@ -111,7 +111,6 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700">Tanggal</label>
-                        <!-- Atribut readonly dihapus agar tanggal dapat diubah manual oleh Guru -->
                         <input type="date" id="input-tanggal" required class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-teal-500 bg-white">
                     </div>
                     <div>
@@ -145,7 +144,7 @@
                     <div class="flex items-center justify-between">
                         <p class="text-teal-900"><strong>Riwayat Terakhir:</strong> <span id="txt-riwayat">-</span> (<span id="txt-status">-</span>)</p>
                         <span id="badge-prestasi-guru" class="hidden bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300">
-                            🌟 3x Lancar Berturut-turut
+                            🏆 3x Lancar Berturut-turut
                         </span>
                     </div>
                     <p class="text-teal-700 mt-1"><strong>Target Hari Ini:</strong> <span id="txt-target">-</span></p>
@@ -734,9 +733,9 @@
                 list.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
 
                 if (list.length < 3) return false;
-                return list[0].status_evaluasi === "Lancar" && 
-                       list[1].status_evaluasi === "Lancar" && 
-                       list[2].status_evaluasi === "Lancar";
+                return (list[0].status_evaluasi === "Lancar" || list[0].status_evaluasi === "Lanjut") && 
+                       (list[1].status_evaluasi === "Lancar" || list[1].status_evaluasi === "Lanjut") && 
+                       (list[2].status_evaluasi === "Lancar" || list[2].status_evaluasi === "Lanjut");
             } catch (err) {
                 return false;
             }
@@ -765,7 +764,10 @@
                 siswaMasterData.forEach(s => {
                     let list = recordsMap[s.nama] || [];
                     list.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
-                    s.isPrestasi = (list.length >= 3 && list[0].status_evaluasi === "Lancar" && list[1].status_evaluasi === "Lancar" && list[2].status_evaluasi === "Lancar");
+                    s.isPrestasi = (list.length >= 3 && 
+                                   (list[0].status_evaluasi === "Lancar" || list[0].status_evaluasi === "Lanjut") && 
+                                   (list[1].status_evaluasi === "Lancar" || list[1].status_evaluasi === "Lanjut") && 
+                                   (list[2].status_evaluasi === "Lancar" || list[2].status_evaluasi === "Lanjut"));
                 });
 
                 renderSiswaFilteredTable();
@@ -788,7 +790,7 @@
 
             filtered.forEach(data => {
                 const badgeHtml = data.isPrestasi 
-                    ? `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap">🌟 3x Lancar</span>` 
+                    ? `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap">🏆 3x Lanjut</span>` 
                     : `<span class="text-gray-400 text-xs">-</span>`;
 
                 tbody.innerHTML += `
@@ -1051,10 +1053,10 @@
                     const dt = d.data();
                     if (dt.tanggal && dt.tanggal.startsWith(currentMonthWIB)) {
                         monthRecords.push(dt);
-                        if (dt.status_evaluasi === "Lancar") lancarCount++;
+                        if (dt.status_evaluasi === "Lancar" || dt.status_evaluasi === "Lanjut") lancarCount++;
 
                         if (!classStat[dt.kelas]) classStat[dt.kelas] = { lancar: 0, ulang: 0 };
-                        if (dt.status_evaluasi === "Lancar") classStat[dt.kelas].lancar++;
+                        if (dt.status_evaluasi === "Lancar" || dt.status_evaluasi === "Lanjut") classStat[dt.kelas].lancar++;
                         else classStat[dt.kelas].ulang++;
                     }
                 });
@@ -1074,8 +1076,8 @@
                     data: {
                         labels: classes.length > 0 ? classes : ['Belum Ada Data'],
                         datasets: [
-                            { label: 'Lancar', data: dataLancar, backgroundColor: '#0d9488' },
-                            { label: 'Tidak Lancar', data: dataUlang, backgroundColor: '#f59e0b' }
+                            { label: 'Lanjut', data: dataLancar, backgroundColor: '#0d9488' },
+                            { label: 'Ulang', data: dataUlang, backgroundColor: '#f59e0b' }
                         ]
                     },
                     options: { responsive: true, maintainAspectRatio: false }
@@ -1086,7 +1088,7 @@
                 pieChartInstance = new Chart(ctxPie, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Lancar', 'Tidak Lancar'],
+                        labels: ['Lanjut', 'Ulang'],
                         datasets: [{
                             data: [lancarCount, monthRecords.length - lancarCount],
                             backgroundColor: ['#10b981', '#f59e0b']
@@ -1151,7 +1153,12 @@
 
             const student = studentsData.find(s => s.id === studentId);
             document.getElementById('txt-riwayat').innerText = student.hafalan_terakhir;
-            document.getElementById('txt-status').innerText = student.status_terakhir;
+            
+            // Konversi teks tampilan status riwayat
+            let displayStatus = student.status_terakhir;
+            if (displayStatus === "Lancar") displayStatus = "Lanjut";
+            if (displayStatus === "Tidak Lancar") displayStatus = "Ulang";
+            document.getElementById('txt-status').innerText = displayStatus;
 
             const hasBadge = await checkStudentPrestasiBadge(student.nama);
             if(hasBadge) badgeGuru.classList.remove('hidden');
@@ -1233,8 +1240,8 @@
             }
         }
 
-        document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lancar"));
-        document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Tidak Lancar"));
+        document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lanjut"));
+        document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Ulang"));
 
         // 7. EKSPOR LAPORAN
         function generateOfficialPDF(data, tanggal, kelas) {
@@ -1264,14 +1271,26 @@
             doc.setLineWidth(0.5);
             doc.line(14, 34, pageWidth - 14, 34);
 
-            const bodyPDF = data.map((row, idx) => [idx + 1, row.nama_siswa, row.kelas, row.materi_hafalan, row.status_evaluasi]);
+            // Mapping/Transformasi Status "Lancar" -> "Lanjut" dan "Tidak Lancar" -> "Ulang"
+            const bodyPDF = data.map((row, idx) => {
+                let statusFormatted = row.status_evaluasi;
+                if (statusFormatted === "Lancar") statusFormatted = "Lanjut";
+                else if (statusFormatted === "Tidak Lancar") statusFormatted = "Ulang";
+
+                return [idx + 1, row.nama_siswa, row.kelas, row.materi_hafalan, statusFormatted];
+            });
 
             doc.autoTable({
                 startY: 38,
                 head: [['No', 'Nama Siswa', 'Kelas', 'Materi Hafalan', 'Keterangan']],
                 body: bodyPDF,
                 theme: 'grid',
-                headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255], fontStyle: 'bold' },
+                headStyles: { 
+                    fillColor: [13, 148, 136], 
+                    textColor: [255, 255, 255], 
+                    fontStyle: 'bold',
+                    halign: 'center' // MENGATUR HEADER TABEL PDF MENJADI RATA TENGAH
+                },
                 styles: { fontSize: 9, cellPadding: 2.5 },
                 columnStyles: {
                     0: { cellWidth: 12, halign: 'center' },
@@ -1360,14 +1379,20 @@
                 return Swal.fire('Kosong', 'Tidak ada data hafalan pada bulan tersebut.', 'info');
             }
 
-            const excelData = records.map((row, idx) => ({
-                "No": idx + 1,
-                "Tanggal": row.tanggal,
-                "Nama Siswa": row.nama_siswa,
-                "Kelas": row.kelas,
-                "Materi Hafalan": row.materi_hafalan,
-                "Keterangan": row.status_evaluasi
-            }));
+            const excelData = records.map((row, idx) => {
+                let statusFormatted = row.status_evaluasi;
+                if (statusFormatted === "Lancar") statusFormatted = "Lanjut";
+                else if (statusFormatted === "Tidak Lancar") statusFormatted = "Ulang";
+
+                return {
+                    "No": idx + 1,
+                    "Tanggal": row.tanggal,
+                    "Nama Siswa": row.nama_siswa,
+                    "Kelas": row.kelas,
+                    "Materi Hafalan": row.materi_hafalan,
+                    "Keterangan": statusFormatted
+                };
+            });
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
