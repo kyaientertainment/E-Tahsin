@@ -27,7 +27,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <!-- SheetJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Chart.js -->
+    <!-- Chart.js untuk Grafik Statistik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -111,7 +111,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700">Tanggal</label>
-                        <input type="date" id="input-tanggal" required class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-100" readonly>
+                        <!-- Atribut readonly dihapus agar tanggal dapat diubah manual oleh Guru -->
+                        <input type="date" id="input-tanggal" required class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-teal-500 bg-white">
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700">Kelas</label>
@@ -598,15 +599,22 @@
             Swal.fire('Gagal Login', error.message, 'error');
         });
 
-        // Tanggal Defaults
-        const now = new Date();
-        const today = now.toISOString().split('T')[0];
-        const currentMonth = now.toISOString().slice(0, 7);
+        // FUNGSI MENGAMBIL TANGGAL OTOMATIS BERDASARKAN WAKTU INDONESIA BARAT (WIB / Asia/Jakarta)
+        function getWIBDateString() {
+            const now = new Date();
+            const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' };
+            const formatter = new Intl.DateTimeFormat('en-CA', options); // format en-CA menghasilkan YYYY-MM-DD
+            return formatter.format(now);
+        }
 
-        document.getElementById('input-tanggal').value = today;
-        document.getElementById('filter-tanggal-guru').value = today;
-        document.getElementById('filter-tanggal-pdf-admin').value = today;
-        document.getElementById('filter-bulan-excel-admin').value = currentMonth;
+        // Tanggal Defaults (Otomatis WIB & Tetap Dapat Diubah Manual)
+        const todayWIB = getWIBDateString();
+        const currentMonthWIB = todayWIB.slice(0, 7);
+
+        document.getElementById('input-tanggal').value = todayWIB;
+        document.getElementById('filter-tanggal-guru').value = todayWIB;
+        document.getElementById('filter-tanggal-pdf-admin').value = todayWIB;
+        document.getElementById('filter-bulan-excel-admin').value = currentMonthWIB;
 
         window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
@@ -1041,7 +1049,7 @@
 
                 snapRecords.forEach(d => {
                     const dt = d.data();
-                    if (dt.tanggal && dt.tanggal.startsWith(currentMonth)) {
+                    if (dt.tanggal && dt.tanggal.startsWith(currentMonthWIB)) {
                         monthRecords.push(dt);
                         if (dt.status_evaluasi === "Lancar") lancarCount++;
 
