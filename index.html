@@ -144,7 +144,7 @@
                     <div class="flex items-center justify-between">
                         <p class="text-teal-900"><strong>Riwayat Terakhir:</strong> <span id="txt-riwayat">-</span> (<span id="txt-status">-</span>)</p>
                         <span id="badge-prestasi-guru" class="hidden bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300">
-                            🏆 3x Lancar Berturut-turut
+                            🏆 3x Lanjut Berturut-turut
                         </span>
                     </div>
                     <p class="text-teal-700 mt-1"><strong>Target Hari Ini:</strong> <span id="txt-target">-</span></p>
@@ -162,6 +162,22 @@
                     <button type="button" id="btn-ulang" class="flex-1 bg-amber-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-amber-600 shadow transition">Tidak Lancar (Ulang)</button>
                 </div>
             </form>
+        </div>
+
+        <!-- FITUR BARU: DAFTAR SISWA BELUM SETOR (GURU) -->
+        <div id="box-belum-setor" class="hidden bg-amber-50 p-5 rounded-xl border border-amber-200 shadow-sm">
+            <div class="flex items-center justify-between border-b border-amber-200 pb-2 mb-3">
+                <h3 class="font-bold text-amber-900 text-sm flex items-center gap-1.5">
+                    ⚠️ Belum Menyetorkan Hafalan Hari Ini
+                </h3>
+                <span id="badge-count-belum-setor" class="bg-amber-200 text-amber-900 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                    0 Siswa
+                </span>
+            </div>
+            <p class="text-xs text-amber-800 mb-3">Berikut adalah daftar nama siswa di kelas ini yang belum menginput hafalan pada tanggal terpilih:</p>
+            <div id="list-siswa-belum-setor" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <!-- Diisi via JavaScript -->
+            </div>
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-blue-600">
@@ -200,7 +216,7 @@
     <div id="admin-page" class="hidden max-w-6xl mx-auto mt-6 px-4 pb-12 space-y-6">
         <div class="bg-slate-800 text-white p-6 rounded-2xl shadow-md">
             <h2 class="text-2xl font-bold">Panel Kontrol Administrator</h2>
-            <p class="text-xs sm:text-sm text-slate-300 mt-1">Pengelolaan Master Data Siswa, Materi, Statistik & Rekapitulasi</p>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">Pengelolaan Master Data Siswa, Materi, Kelola Setoran, Statistik & Rekapitulasi</p>
         </div>
 
         <!-- TAB NAVIGASI -->
@@ -208,7 +224,7 @@
             <button id="tab-btn-dashboard" onclick="switchAdminTab('dashboard')" class="pb-3 tab-active transition">Dashboard</button>
             <button id="tab-btn-siswa" onclick="switchAdminTab('siswa')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Data Siswa</button>
             <button id="tab-btn-materi" onclick="switchAdminTab('materi')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Materi Hafalan</button>
-            <button id="tab-btn-rekap" onclick="switchAdminTab('rekap')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Rekap & Ekspor</button>
+            <button id="tab-btn-rekap" onclick="switchAdminTab('rekap')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Rekap & Kelola Setoran</button>
         </div>
 
         <!-- TAB 0: DASHBOARD STATISTIK -->
@@ -335,10 +351,10 @@
             </div>
         </div>
 
-        <!-- TAB 3: REKAP & EKSPOR -->
-        <div id="admin-tab-rekap" class="hidden space-y-4">
+        <!-- TAB 3: REKAP & KELOLA SETORAN HAFALAN -->
+        <div id="admin-tab-rekap" class="hidden space-y-6">
             <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi Laporan Hafalan</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi & Ekspor Laporan</h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
@@ -399,13 +415,60 @@
                         </button>
                     </div>
                 </div>
+            </div>
 
+            <!-- FITUR BARU: EDIT & KELOLA DATA HAFALAN (ADMINISTRATOR) -->
+            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 gap-2">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Daftar & Kelola Setoran Hafalan</h3>
+                        <p class="text-xs text-gray-500">Edit atau hapus data riwayat hafalan siswa yang telah diinput</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                        <select id="filter-hafalan-kelas-admin" class="px-3 py-1.5 border rounded-lg text-xs bg-white">
+                            <option value="">Semua Kelas</option>
+                            <option value="1 Abu Bakar">1 Abu Bakar</option>
+                            <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
+                            <option value="2 Usman bin Affan">2 Usman bin Affan</option>
+                            <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
+                            <option value="3 Imam Hanafi">3 Imam Hanafi</option>
+                            <option value="3 Imam Maliki">3 Imam Maliki</option>
+                            <option value="4 Imam Syafii">4 Imam Syafii</option>
+                            <option value="4 Imam Hambali">4 Imam Hambali</option>
+                            <option value="5 Imam Asyari">5 Imam Asyari</option>
+                            <option value="5 Imam Maturidi">5 Imam Maturidi</option>
+                            <option value="6 Imam Ghazali">6 Imam Ghazali</option>
+                            <option value="6 Imam Junaidi">6 Imam Junaidi</option>
+                        </select>
+                        <input type="date" id="filter-hafalan-tanggal-admin" class="px-3 py-1.5 border rounded-lg text-xs bg-white">
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-600">
+                            <thead class="text-xs uppercase bg-slate-50 text-gray-500 border-b">
+                                <tr>
+                                    <th class="px-4 py-3 font-bold">TANGGAL</th>
+                                    <th class="px-4 py-3 font-bold">KELAS</th>
+                                    <th class="px-4 py-3 font-bold">NAMA SISWA</th>
+                                    <th class="px-4 py-3 font-bold">MATERI</th>
+                                    <th class="px-4 py-3 font-bold text-center">STATUS</th>
+                                    <th class="px-4 py-3 font-bold text-center w-32">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-hafalan-admin" class="divide-y divide-gray-100 text-xs">
+                                <tr><td colspan="6" class="text-center py-6 text-gray-400">Memuat data hafalan...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- MODAL EDIT/TAMBAH -->
+    <!-- MODAL EDIT/TAMBAH SISWA & MATERI -->
     <div id="modal-add-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
@@ -550,6 +613,43 @@
         </div>
     </div>
 
+    <!-- MODAL KHUSUS EDIT SETORAN HAFALAN (ADMINISTRATOR) -->
+    <div id="modal-edit-hafalan" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-lg font-bold text-gray-800">Edit Data Setoran Hafalan</h3>
+                <button onclick="closeModal('modal-edit-hafalan')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
+            </div>
+            <form id="form-edit-hafalan" class="space-y-4">
+                <input type="hidden" id="edit-hafalan-id">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600">Tanggal Setor</label>
+                    <input type="date" id="edit-hafalan-tanggal" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600">Kelas</label>
+                    <input type="text" id="edit-hafalan-kelas" readonly class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-gray-100 text-gray-600 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600">Nama Siswa</label>
+                    <input type="text" id="edit-hafalan-siswa" readonly class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-gray-100 text-gray-600 cursor-not-allowed">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600">Materi Hafalan</label>
+                    <input type="text" id="edit-hafalan-materi" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600">Status Evaluasi</label>
+                    <select id="edit-hafalan-status" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-white">
+                        <option value="Lanjut">Lanjut</option>
+                        <option value="Ulang">Ulang</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600 shadow">Simpan Perubahan Hafalan</button>
+            </form>
+        </div>
+    </div>
+
     </div>
 
     <!-- FOOTER RESMI APLIKASI -->
@@ -614,6 +714,7 @@
         document.getElementById('filter-tanggal-guru').value = todayWIB;
         document.getElementById('filter-tanggal-pdf-admin').value = todayWIB;
         document.getElementById('filter-bulan-excel-admin').value = currentMonthWIB;
+        document.getElementById('filter-hafalan-tanggal-admin').value = todayWIB;
 
         window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
         window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
@@ -652,6 +753,7 @@
             } else if(tabName === 'rekap') {
                 document.getElementById('admin-tab-rekap').classList.remove('hidden');
                 document.getElementById('tab-btn-rekap').classList.add('tab-active');
+                loadAdminHafalanTable();
             }
         };
 
@@ -1104,9 +1206,55 @@
             }
         }
 
-        // 6. INPUT HAFALAN (GURU)
+        // 6. INPUT HAFALAN & TAMPILAN SISWA BELUM SETOR (GURU)
         let studentsData = [];
         let materiData = [];
+
+        async function updateBelumSetorList() {
+            const kelas = document.getElementById('select-kelas').value;
+            const tanggal = document.getElementById('input-tanggal').value;
+            const boxBelumSetor = document.getElementById('box-belum-setor');
+            const listContainer = document.getElementById('list-siswa-belum-setor');
+            const badgeCount = document.getElementById('badge-count-belum-setor');
+
+            if (!kelas || !tanggal) {
+                boxBelumSetor.classList.add('hidden');
+                return;
+            }
+
+            try {
+                // Ambil semua hafalan yang diinput pada tanggal dan kelas terpilih
+                const qHafalan = query(collection(db, "hafalan_records"), 
+                    where("kelas", "==", kelas), 
+                    where("tanggal", "==", tanggal));
+                const snapHafalan = await getDocs(qHafalan);
+                const sudahSetorSet = new Set();
+                snapHafalan.forEach(doc => sudahSetorSet.add(doc.data().nama_siswa));
+
+                // Filter siswa yang belum setor
+                const belumSetorList = studentsData.filter(s => !sudahSetorSet.has(s.nama));
+
+                listContainer.innerHTML = '';
+                badgeCount.innerText = `${belumSetorList.length} Siswa`;
+
+                if (belumSetorList.length === 0) {
+                    listContainer.innerHTML = '<p class="col-span-2 text-emerald-700 font-semibold text-xs">🎉 Luar biasa! Semua siswa kelas ini sudah menyetorkan hafalan hari ini.</p>';
+                } else {
+                    belumSetorList.forEach((s, idx) => {
+                        listContainer.innerHTML += `
+                            <div class="bg-white px-3 py-1.5 rounded border border-amber-200 text-gray-700 font-medium flex items-center justify-between">
+                                <span>${idx + 1}. ${s.nama}</span>
+                                <span class="text-[10px] text-amber-600 font-normal">Belum Setor</span>
+                            </div>`;
+                    });
+                }
+                boxBelumSetor.classList.remove('hidden');
+            } catch (err) {
+                console.error("Gagal memuat list belum setor:", err);
+            }
+        }
+
+        document.getElementById('input-tanggal').addEventListener('change', updateBelumSetorList);
 
         document.getElementById('select-kelas').addEventListener('change', async (e) => {
             const kelas = e.target.value;
@@ -1119,7 +1267,10 @@
             selMateri.innerHTML = '<option value="">-- Pilih Siswa Dulu --</option>';
             selMateri.disabled = true;
 
-            if(!kelas) return;
+            if(!kelas) {
+                document.getElementById('box-belum-setor').classList.add('hidden');
+                return;
+            }
 
             const qSiswa = query(collection(db, "students"), where("kelas", "==", kelas));
             const snapSiswa = await getDocs(qSiswa);
@@ -1137,6 +1288,8 @@
             
             selMateri.innerHTML = '<option value="">-- Pilih Materi --</option>';
             materiData.forEach(m => selMateri.innerHTML += `<option value="${m.nama_materi}" data-urut="${m.urutan}">${m.urutan}. ${m.nama_materi}</option>`);
+
+            updateBelumSetorList();
         });
 
         document.getElementById('select-siswa').addEventListener('change', async (e) => {
@@ -1154,7 +1307,6 @@
             const student = studentsData.find(s => s.id === studentId);
             document.getElementById('txt-riwayat').innerText = student.hafalan_terakhir;
             
-            // Konversi teks tampilan status riwayat
             let displayStatus = student.status_terakhir;
             if (displayStatus === "Lancar") displayStatus = "Lanjut";
             if (displayStatus === "Tidak Lancar") displayStatus = "Ulang";
@@ -1234,6 +1386,7 @@
                     document.getElementById('select-materi').value = "";
                     document.getElementById('select-materi').disabled = true;
                     document.getElementById('info-siswa').classList.add('hidden');
+                    updateBelumSetorList(); // Refresh otomatis daftar belum setor
                 });
             } catch (error) {
                 Swal.fire('Error', 'Terjadi kesalahan saat menyimpan data.', 'error');
@@ -1243,7 +1396,134 @@
         document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lanjut"));
         document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Ulang"));
 
-        // 7. EKSPOR LAPORAN
+        // 7. KELOLA SETORAN HAFALAN (ADMINISTRATOR)
+        let hafalanMasterDataAdmin = [];
+
+        async function loadAdminHafalanTable() {
+            const tbody = document.getElementById('table-body-hafalan-admin');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6">Memuat data hafalan...</td></tr>';
+            try {
+                const snap = await getDocs(collection(db, "hafalan_records"));
+                hafalanMasterDataAdmin = [];
+                snap.forEach(d => {
+                    hafalanMasterDataAdmin.push({ id: d.id, ...d.data() });
+                });
+                renderAdminHafalanFilteredTable();
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-red-500">Gagal memuat data hafalan.</td></tr>';
+            }
+        }
+
+        function renderAdminHafalanFilteredTable() {
+            const tbody = document.getElementById('table-body-hafalan-admin');
+            const kelasVal = document.getElementById('filter-hafalan-kelas-admin').value;
+            const tanggalVal = document.getElementById('filter-hafalan-tanggal-admin').value;
+
+            let filtered = hafalanMasterDataAdmin.filter(item => {
+                const matchKelas = !kelasVal || item.kelas === kelasVal;
+                const matchTanggal = !tanggalVal || item.tanggal === tanggalVal;
+                return matchKelas && matchTanggal;
+            });
+
+            filtered.sort((a,b) => b.tanggal.localeCompare(a.tanggal) || a.kelas.localeCompare(b.kelas) || a.nama_siswa.localeCompare(b.nama_siswa));
+
+            tbody.innerHTML = '';
+            if(filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-gray-400">Tidak ada data setoran hafalan ditemukan.</td></tr>';
+                return;
+            }
+
+            filtered.forEach(data => {
+                let statusFormatted = data.status_evaluasi;
+                if (statusFormatted === "Lancar") statusFormatted = "Lanjut";
+                else if (statusFormatted === "Tidak Lancar") statusFormatted = "Ulang";
+
+                const badgeClass = statusFormatted === "Lanjut" 
+                    ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
+                    : "bg-amber-100 text-amber-800 border-amber-300";
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="px-4 py-3 font-medium text-gray-700">${data.tanggal}</td>
+                        <td class="px-4 py-3 text-gray-600">${data.kelas}</td>
+                        <td class="px-4 py-3 font-semibold text-gray-800">${data.nama_siswa}</td>
+                        <td class="px-4 py-3 text-gray-700">${data.materi_hafalan}</td>
+                        <td class="px-4 py-3 text-center">
+                            <span class="${badgeClass} border px-2 py-0.5 rounded-full text-[11px] font-bold">
+                                ${statusFormatted}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <button onclick="editHafalanAdmin('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded text-xs font-semibold mr-1">Edit</button>
+                            <button onclick="hapusHafalanAdmin('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">Hapus</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        document.getElementById('filter-hafalan-kelas-admin').addEventListener('change', renderAdminHafalanFilteredTable);
+        document.getElementById('filter-hafalan-tanggal-admin').addEventListener('change', renderAdminHafalanFilteredTable);
+
+        window.editHafalanAdmin = (id) => {
+            const h = hafalanMasterDataAdmin.find(item => item.id === id);
+            if(!h) return;
+            document.getElementById('edit-hafalan-id').value = h.id;
+            document.getElementById('edit-hafalan-tanggal').value = h.tanggal;
+            document.getElementById('edit-hafalan-kelas').value = h.kelas;
+            document.getElementById('edit-hafalan-siswa').value = h.nama_siswa;
+            document.getElementById('edit-hafalan-materi').value = h.materi_hafalan;
+            
+            let st = h.status_evaluasi;
+            if(st === "Lancar") st = "Lanjut";
+            if(st === "Tidak Lancar") st = "Ulang";
+            document.getElementById('edit-hafalan-status').value = st;
+
+            openModal('modal-edit-hafalan');
+        };
+
+        document.getElementById('form-edit-hafalan').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-hafalan-id').value;
+            const tanggal = document.getElementById('edit-hafalan-tanggal').value;
+            const materi = document.getElementById('edit-hafalan-materi').value;
+            const status = document.getElementById('edit-hafalan-status').value;
+
+            showLoading('Mengubah...');
+            try {
+                await updateDoc(doc(db, "hafalan_records", id), {
+                    tanggal: tanggal,
+                    materi_hafalan: materi,
+                    status_evaluasi: status
+                });
+                closeModal('modal-edit-hafalan');
+                Swal.fire('Berhasil', 'Data setoran hafalan telah diperbarui!', 'success');
+                loadAdminHafalanTable();
+            } catch (err) {
+                Swal.fire('Error', 'Gagal memperbarui data hafalan.', 'error');
+            }
+        });
+
+        window.hapusHafalanAdmin = async (id) => {
+            Swal.fire({
+                title: 'Hapus Setoran Hafalan Ini?',
+                text: 'Data yang dihapus tidak dapat dikembalikan lagi.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus Data',
+                cancelButtonText: 'Batal'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    showLoading('Menghapus...');
+                    await deleteDoc(doc(db, "hafalan_records", id));
+                    Swal.fire('Terhapus!', 'Data setoran hafalan berhasil dihapus.', 'success');
+                    loadAdminHafalanTable();
+                }
+            });
+        };
+
+        // 8. EKSPOR LAPORAN PDF & EXCEL
         function generateOfficialPDF(data, tanggal, kelas) {
             if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data hafalan untuk tanggal/kelas tersebut.', 'info');
             
@@ -1271,7 +1551,6 @@
             doc.setLineWidth(0.5);
             doc.line(14, 34, pageWidth - 14, 34);
 
-            // Mapping/Transformasi Status "Lancar" -> "Lanjut" dan "Tidak Lancar" -> "Ulang"
             const bodyPDF = data.map((row, idx) => {
                 let statusFormatted = row.status_evaluasi;
                 if (statusFormatted === "Lancar") statusFormatted = "Lanjut";
@@ -1289,7 +1568,7 @@
                     fillColor: [13, 148, 136], 
                     textColor: [255, 255, 255], 
                     fontStyle: 'bold',
-                    halign: 'center' // MENGATUR HEADER TABEL PDF MENJADI RATA TENGAH
+                    halign: 'center'
                 },
                 styles: { fontSize: 9, cellPadding: 2.5 },
                 columnStyles: {
