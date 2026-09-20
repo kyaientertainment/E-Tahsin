@@ -1,1686 +1,1034 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>E-Tahsin - MI Salafiyah Wareng</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>E-Smart - MI Salafiyah Wareng</title>
+  
+  <!-- PWA Manifest & Theme Color -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3588/3588658.png">
 
-    <!-- Meta Tag Warna Status Bar HP (Diselaraskan dengan Navbar Slate-800 #1e293b) -->
-    <meta name="theme-color" content="#1e293b">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    
-    <meta name="description" content="Sistem Pencatatan dan Monitoring Hafalan Siswa MI Salafiyah Wareng">
-    
-    <!-- Icon Aplikasi Baru (Al-Qur'an / Tahsin) -->
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2904/2904843.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2904/2904843.png">
-    <link rel="manifest" href="./manifest.json">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SweetAlert2 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- jsPDF & AutoTable CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <!-- SheetJS (xlsx) CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- jsPDF & AutoTable -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <!-- SheetJS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Chart.js untuk Grafik Statistik -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        .hidden { display: none !important; }
-        .modal { background-color: rgba(0,0,0,0.5); }
-        .tab-active {
-            border-bottom: 3px solid #0d9488;
-            color: #0d9488;
-            font-weight: 700;
-        }
-    </style>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    button, input, select, textarea { touch-action: manipulation; }
+  </style>
 </head>
-<body class="bg-slate-50 font-sans text-gray-800 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col justify-between">
 
-    <div>
-    <!-- HALAMAN LOGIN -->
-    <div id="login-page" class="min-h-screen flex items-center justify-center p-4">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
-            <div class="text-center mb-6">
-                <h1 class="text-3xl font-bold text-teal-700">E-Tahsin</h1>
-                <h2 class="text-sm font-semibold text-gray-600 mt-1">Sistem Pencatatan Hafalan Siswa</h2>
-                <h3 class="text-xs text-gray-500">MI Salafiyah Wareng</h3>
+  <!-- NAVBAR / HEADER -->
+  <header class="bg-teal-700 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-2">
+      <div class="flex items-center space-x-2 min-w-0">
+        <div class="bg-white text-teal-700 p-1.5 rounded-lg font-bold text-xl flex-shrink-0">E</div>
+        <div class="truncate">
+          <h1 class="font-bold text-base md:text-lg leading-tight truncate">E-Smart</h1>
+          <p class="text-xs text-teal-100 truncate hidden sm:block">MI Salafiyah Wareng</p>
+        </div>
+      </div>
+      
+      <div id="userInfoHeader" class="hidden flex items-center space-x-2 flex-shrink-0">
+        <button id="btnInstallPWA" class="hidden bg-amber-400 hover:bg-amber-500 text-slate-900 text-xs px-2.5 py-1.5 rounded-lg font-bold transition flex items-center gap-1 shadow">
+          <span>📲 Install App</span>
+        </button>
+        <div class="text-right text-xs md:text-sm">
+          <p id="userEmailText" class="font-semibold max-w-[100px] sm:max-w-none truncate"></p>
+          <span id="userRoleBadge" class="inline-block bg-teal-800 text-teal-100 text-[10px] px-2 py-0.5 rounded-full font-medium"></span>
+        </div>
+        <button id="btnLogout" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1 shadow">
+          <span>Keluar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+    <div id="loadingApp" class="flex flex-col items-center justify-center py-20 space-y-3">
+      <div class="w-10 h-10 border-4 border-teal-600 border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-slate-500 text-sm font-medium">Memuat Aplikasi...</p>
+    </div>
+
+    <!-- 1. HALAMAN LOGIN -->
+    <section id="pageLogin" class="hidden max-w-md mx-auto my-6">
+      <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-100 space-y-6">
+        <div class="text-center space-y-1">
+          <h2 class="text-2xl font-bold text-teal-800">Selamat Datang</h2>
+          <p class="text-slate-500 text-xs md:text-sm">Sistem Monitoring Kemampuan Numerasi<br><b>MI Salafiyah Wareng</b></p>
+        </div>
+
+        <form id="formLogin" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">EMAIL GURU / ADMIN</label>
+            <input type="email" id="loginEmail" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm" placeholder="nama@domain.com">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">PASSWORD</label>
+            <input type="password" id="loginPassword" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm" placeholder="••••••••">
+          </div>
+          <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2.5 rounded-xl text-sm shadow transition">
+            Masuk dengan Email
+          </button>
+        </form>
+
+        <div class="relative flex py-2 items-center">
+          <div class="flex-grow border-t border-slate-200"></div>
+          <span class="flex-shrink mx-4 text-xs text-slate-400">Atau</span>
+          <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <button id="btnGoogleLogin" type="button" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-2.5 rounded-xl border border-slate-300 text-sm shadow-sm transition flex items-center justify-center space-x-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Masuk dengan Google</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. HALAMAN GURU -->
+    <section id="pageGuru" class="hidden space-y-6">
+      <div class="bg-gradient-to-r from-teal-700 to-teal-600 text-white p-5 rounded-2xl shadow-md">
+        <h2 class="text-lg md:text-xl font-bold">Input Hafalan Numerasi Siswa</h2>
+        <p class="text-xs text-teal-100">Pilih kelas & siswa untuk mencatat setoran hari ini</p>
+      </div>
+
+      <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">TANGGAL SETORAN</label>
+            <input type="date" id="inputTanggal" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">PILIH KELAS</label>
+            <select id="selectKelasGuru" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+              <option value="">-- Pilih Kelas --</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">NAMA SISWA</label>
+          <select id="selectSiswaGuru" disabled class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm bg-slate-50">
+            <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
+          </select>
+        </div>
+
+        <div id="cardInfoHafalan" class="hidden bg-slate-50 border border-teal-100 p-4 rounded-xl space-y-3">
+          <div id="boxBadgePrestasi" class="hidden flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-900 px-3 py-1.5 rounded-lg shadow-sm font-bold text-xs">
+            <span class="text-base">🌟</span>
+            <span id="textBadgePrestasi">Bintang Numerasi (3x Lancar Berturut-turut!)</span>
+          </div>
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold text-slate-500 uppercase">Riwayat Terakhir</span>
+            <span id="badgeStatusTerakhir" class="text-[10px] font-bold px-2 py-0.5 rounded-full"></span>
+          </div>
+          <p id="textHafalanTerakhir" class="text-sm font-medium text-slate-700">-</p>
+          <hr class="border-slate-200">
+          <span class="text-xs font-bold text-teal-700 uppercase block">Rekomendasi Target Saat Ini:</span>
+          <p id="textRekomendasiTarget" class="text-base font-bold text-teal-900">-</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">MATERI YANG DISETORKAN</label>
+          <select id="selectMateriGuru" disabled class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm bg-slate-50">
+            <option value="">-- Pilih Siswa Terlebih Dahulu --</option>
+          </select>
+        </div>
+
+        <div id="boxPanduanSoal" class="hidden border border-emerald-200 rounded-xl overflow-hidden bg-emerald-50/30">
+          <div class="bg-emerald-100/60 px-4 py-2.5 flex items-center gap-2 border-b border-emerald-200">
+            <span class="text-emerald-800 font-bold text-xs md:text-sm">📖 Daftar Panduan Soal</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-700">
+              <thead class="bg-emerald-100/30 text-emerald-900 font-semibold border-b border-emerald-100">
+                <tr>
+                  <th class="p-3 w-1/2">Soal / Pertanyaan</th>
+                  <th class="p-3 w-1/2">Jawaban</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyPanduanSoal" class="divide-y divide-emerald-100/50 bg-white">
+                <!-- Loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- FITUR BARU: KOTAK INFO SISWA BELUM SETOR -->
+        <div id="boxBelumSetor" class="hidden mt-4 border border-rose-200 rounded-xl overflow-hidden bg-rose-50/30">
+          <div class="bg-rose-100/60 px-4 py-2.5 flex items-center justify-between border-b border-rose-200">
+            <span class="text-rose-800 font-bold text-xs md:text-sm">⚠️ Belum Setor Hari Ini</span>
+            <span id="badgeCountBelumSetor" class="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+          </div>
+          <div class="p-3 max-h-40 overflow-y-auto">
+            <ul id="listBelumSetor" class="text-xs text-slate-700 space-y-1.5 list-disc pl-4 font-medium">
+              <!-- Loaded dynamically -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="pt-2 grid grid-cols-2 gap-3">
+          <button id="btnEvaluasiLancar" type="button" disabled class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl text-xs md:text-sm shadow transition flex items-center justify-center space-x-1">
+            <span>LANCAR (LANJUT)</span>
+          </button>
+          <button id="btnEvaluasiUlang" type="button" disabled class="bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl text-xs md:text-sm shadow transition flex items-center justify-center space-x-1">
+            <span>TIDAK LANCAR (ULANG)</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h3 class="text-sm font-bold text-slate-700">Unduh Laporan Hafalan (Guru)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Filter Kelas</label>
+            <select id="filterGuruKelas" class="w-full px-3 py-2 rounded-lg border text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">Filter Tanggal</label>
+            <input type="date" id="filterGuruTanggal" class="w-full px-3 py-2 rounded-lg border text-sm">
+          </div>
+        </div>
+        <button id="btnGuruCetakPDF" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-2.5 rounded-xl text-sm shadow transition">
+          📄 Download Laporan PDF
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. HALAMAN ADMINISTRATOR -->
+    <section id="pageAdmin" class="hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-800 to-slate-700 text-white p-5 rounded-2xl shadow-md">
+        <h2 class="text-lg md:text-xl font-bold">Panel Kontrol Administrator</h2>
+        <p class="text-xs text-slate-300">Pengelolaan Master Data Siswa, Materi & Rekapitulasi</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm col-span-1 md:col-span-2 space-y-2">
+          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Statistik Evaluasi Per Kelas</h3>
+          <div class="h-52">
+            <canvas id="chartEvaluasiKelas"></canvas>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm col-span-1 space-y-2 flex flex-col justify-between">
+          <div>
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Proporsi Kelancaran Bulan Ini</h3>
+            <div class="h-44 flex justify-center items-center">
+              <canvas id="chartPieKelancaran"></canvas>
             </div>
-            
-            <form id="login-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Email Pengguna</label>
-                    <input type="email" id="email" required placeholder="email@sekolah.com" class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-teal-500 focus:border-teal-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" id="password" required placeholder="******" class="mt-1 w-full px-4 py-2 border rounded-lg focus:ring-teal-500 focus:border-teal-500">
-                </div>
-                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-teal-700 transition">Masuk Aplikasi</button>
-            </form>
+          </div>
+          <div class="text-center">
+            <span id="textTotalSetoranBulan" class="text-xs font-bold text-teal-700">Total Setoran: 0</span>
+          </div>
+        </div>
+      </div>
 
-            <div class="mt-6 flex items-center justify-center space-x-2">
-                <span class="h-px bg-gray-300 flex-1"></span>
-                <span class="text-sm text-gray-400">ATAU</span>
-                <span class="h-px bg-gray-300 flex-1"></span>
-            </div>
+      <div class="flex border-b border-slate-200 space-x-4 overflow-x-auto">
+        <button id="tabBtnSiswa" class="py-2 px-4 border-b-2 border-teal-600 font-bold text-teal-700 text-sm whitespace-nowrap">Data Siswa</button>
+        <button id="tabBtnMateri" class="py-2 px-4 border-b-2 border-transparent font-medium text-slate-500 hover:text-slate-700 text-sm whitespace-nowrap">Materi Hafalan</button>
+        <button id="tabBtnRekap" class="py-2 px-4 border-b-2 border-transparent font-medium text-slate-500 hover:text-slate-700 text-sm whitespace-nowrap">Rekap & Ekspor</button>
+      </div>
 
-            <!-- Tombol Login Google -->
-            <button id="btn-google-login" type="button" class="mt-6 w-full flex items-center justify-center bg-white border-2 border-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition shadow-sm">
-                <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                </svg>
-                Masuk dengan Akun Google
+      <!-- TAB 1: DATA SISWA -->
+      <div id="tabContentSiswa" class="space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+          <button id="btnModalTambahSiswa" class="bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">
+            + Tambah Siswa Manual
+          </button>
+          <div class="flex items-center gap-2">
+            <input type="file" id="fileExcelSiswa" accept=".xlsx, .csv" class="hidden">
+            <button id="btnTriggerExcelSiswa" class="w-full sm:w-auto bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">
+              📥 Import Excel Siswa (Timpa Data)
             </button>
+          </div>
         </div>
-    </div>
-
-    <!-- NAVBAR UTAMA -->
-    <nav id="navbar" class="hidden bg-slate-800 text-white p-3 sm:p-4 shadow-md sticky top-0 z-40">
-        <div class="max-w-6xl mx-auto flex justify-between items-center gap-1">
-            <div class="text-left">
-                <h1 class="text-lg sm:text-xl md:text-2xl font-bold leading-tight">E-Tahsin</h1>
-                <p class="text-[10px] sm:text-xs text-slate-300 leading-tight">MI Salafiyah Wareng</p>
-            </div>
-            <div class="flex items-center gap-2 sm:gap-3 text-right">
-                <div>
-                    <p id="user-display-name" class="font-bold text-[11px] sm:text-sm leading-tight">-</p>
-                    <p id="user-display-role" class="text-teal-400 text-[9px] sm:text-xs leading-tight">-</p>
-                </div>
-                <button id="btn-logout" class="bg-red-500 hover:bg-red-600 px-2 py-1.5 sm:px-3 sm:py-2 rounded-md text-[10px] sm:text-xs font-semibold transition whitespace-nowrap">
-                    Log Out
-                </button>
-            </div>
+        <div class="relative">
+          <input type="text" id="searchAdminSiswa" class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs" placeholder="🔍 Cari nama atau kelas siswa...">
         </div>
-    </nav>
-
-    <!-- HALAMAN GURU -->
-    <div id="guru-page" class="hidden max-w-3xl mx-auto mt-6 px-4 pb-10 space-y-6">
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-teal-600">
-            <h2 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Input Hafalan Harian</h2>
-            
-            <form id="form-hafalan" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Tanggal</label>
-                        <input type="date" id="input-tanggal" required class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-teal-500 bg-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700">Kelas</label>
-                        <select id="select-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg focus:ring-teal-500">
-                            <option value="">-- Pilih Kelas --</option>
-                            <option value="1 Abu Bakar">1 Abu Bakar</option>
-                            <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                            <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                            <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                            <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                            <option value="3 Imam Maliki">3 Imam Maliki</option>
-                            <option value="4 Imam Syafii">4 Imam Syafii</option>
-                            <option value="4 Imam Hambali">4 Imam Hambali</option>
-                            <option value="5 Imam Asyari">5 Imam Asyari</option>
-                            <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                            <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                            <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700">Nama Siswa</label>
-                    <select id="select-siswa" required disabled class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50 focus:ring-teal-500">
-                        <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
-                    </select>
-                </div>
-
-                <div id="info-siswa" class="hidden bg-teal-50 p-3 rounded-lg border border-teal-200 text-sm">
-                    <div class="flex items-center justify-between">
-                        <p class="text-teal-900"><strong>Riwayat Terakhir:</strong> <span id="txt-riwayat">-</span> (<span id="txt-status">-</span>)</p>
-                        <span id="badge-prestasi-guru" class="hidden bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300">
-                            🏆 3x Lanjut Berturut-turut
-                        </span>
-                    </div>
-                    <p class="text-teal-700 mt-1"><strong>Target Hari Ini:</strong> <span id="txt-target">-</span></p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700">Materi yang Disetorkan</label>
-                    <select id="select-materi" required disabled class="mt-1 w-full px-3 py-2 border rounded-lg bg-gray-50 focus:ring-teal-500">
-                        <option value="">-- Pilih Siswa Terlebih Dahulu --</option>
-                    </select>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t">
-                    <button type="button" id="btn-lancar" class="flex-1 bg-teal-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-700 shadow transition">Lancar (Lanjut)</button>
-                    <button type="button" id="btn-ulang" class="flex-1 bg-amber-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-amber-600 shadow transition">Tidak Lancar (Ulang)</button>
-                </div>
-            </form>
+        <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+              <tr>
+                <th class="p-3">Nama Siswa</th>
+                <th class="p-3">Kelas</th>
+                <th class="p-3">Hafalan Terakhir</th>
+                <th class="p-3 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAdminSiswa" class="divide-y divide-slate-100"></tbody>
+          </table>
         </div>
+      </div>
 
-        <!-- FITUR BARU: DAFTAR SISWA BELUM SETOR (GURU) -->
-        <div id="box-belum-setor" class="hidden bg-amber-50 p-5 rounded-xl border border-amber-200 shadow-sm">
-            <div class="flex items-center justify-between border-b border-amber-200 pb-2 mb-3">
-                <h3 class="font-bold text-amber-900 text-sm flex items-center gap-1.5">
-                    ⚠️ Belum Menyetorkan Hafalan Hari Ini
-                </h3>
-                <span id="badge-count-belum-setor" class="bg-amber-200 text-amber-900 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                    0 Siswa
-                </span>
-            </div>
-            <p class="text-xs text-amber-800 mb-3">Berikut adalah daftar nama siswa di kelas ini yang belum menginput hafalan pada tanggal terpilih:</p>
-            <div id="list-siswa-belum-setor" class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                <!-- Diisi via JavaScript -->
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 border-t-4 border-t-blue-600">
-            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Unduh Laporan Harian (PDF)</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Filter Kelas</label>
-                    <select id="filter-kelas-guru" class="mt-1 w-full px-3 py-2 border rounded-lg">
-                        <option value="">Semua Kelas</option>
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Filter Tanggal</label>
-                    <input type="date" id="filter-tanggal-guru" class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-            </div>
-            <button id="btn-download-pdf-guru" class="w-full bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-red-700 flex items-center justify-center transition shadow">
-                Download Laporan PDF
+      <!-- TAB 2: MATERI HAFALAN -->
+      <div id="tabContentMateri" class="hidden space-y-4">
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+          <button id="btnModalTambahMateri" class="bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">
+            + Tambah Materi Manual
+          </button>
+          <div class="flex items-center gap-2">
+            <input type="file" id="fileExcelMateri" accept=".xlsx, .csv" class="hidden">
+            <button id="btnTriggerExcelMateri" class="w-full sm:w-auto bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">
+              📥 Import Excel Materi (Timpa Data)
             </button>
+          </div>
         </div>
-    </div>
-
-    <!-- HALAMAN ADMINISTRATOR METRIC DASHBOARD -->
-    <div id="admin-page" class="hidden max-w-6xl mx-auto mt-6 px-4 pb-12 space-y-6">
-        <div class="bg-slate-800 text-white p-6 rounded-2xl shadow-md">
-            <h2 class="text-2xl font-bold">Panel Kontrol Administrator</h2>
-            <p class="text-xs sm:text-sm text-slate-300 mt-1">Pengelolaan Master Data Siswa, Materi, Kelola Setoran, Statistik & Rekapitulasi</p>
+        <div class="relative">
+          <input type="text" id="searchAdminMateri" class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs" placeholder="🔍 Cari materi atau kelas...">
         </div>
-
-        <!-- TAB NAVIGASI -->
-        <div class="border-b border-gray-200 flex flex-wrap gap-4 sm:gap-8 text-sm sm:text-base font-semibold text-gray-500">
-            <button id="tab-btn-dashboard" onclick="switchAdminTab('dashboard')" class="pb-3 tab-active transition">Dashboard</button>
-            <button id="tab-btn-siswa" onclick="switchAdminTab('siswa')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Data Siswa</button>
-            <button id="tab-btn-materi" onclick="switchAdminTab('materi')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Materi Hafalan</button>
-            <button id="tab-btn-rekap" onclick="switchAdminTab('rekap')" class="pb-3 text-gray-600 hover:text-teal-600 transition">Rekap & Kelola Setoran</button>
+        <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+              <tr>
+                <th class="p-3">Kelas</th>
+                <th class="p-3">Urutan</th>
+                <th class="p-3">Nama Materi</th>
+                <th class="p-3">Jml Panduan Soal</th>
+                <th class="p-3 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAdminMateri" class="divide-y divide-slate-100"></tbody>
+          </table>
         </div>
+      </div>
 
-        <!-- TAB 0: DASHBOARD STATISTIK -->
-        <div id="admin-tab-dashboard" class="space-y-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Total Siswa</p>
-                    <p id="stat-total-siswa" class="text-2xl font-bold text-teal-700 mt-1">0</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Total Materi</p>
-                    <p id="stat-total-materi" class="text-2xl font-bold text-blue-700 mt-1">0</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Setoran Bulan Ini</p>
-                    <p id="stat-total-setoran" class="text-2xl font-bold text-purple-700 mt-1">0</p>
-                </div>
-                <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-sm text-center">
-                    <p class="text-xs font-semibold text-gray-500 uppercase">Tingkat Kelancaran</p>
-                    <p id="stat-persen-lancar" class="text-2xl font-bold text-emerald-600 mt-1">0%</p>
-                </div>
+      <!-- TAB 3: REKAPITULASI & EKSPOR -->
+      <div id="tabContentRekap" class="hidden space-y-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-500 mb-1">Filter Kelas</label>
+              <select id="filterAdminKelas" class="w-full px-3 py-2 rounded-lg border text-sm"></select>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="md:col-span-2 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-                    <h4 class="text-sm font-bold text-gray-700 mb-4">Statistik Evaluasi Hafalan Per Kelas (Bulan Ini)</h4>
-                    <div class="relative h-64">
-                        <canvas id="chart-kelas-bar"></canvas>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-                    <h4 class="text-sm font-bold text-gray-700 mb-4">Rasio Kelancaran Overall</h4>
-                    <div class="relative h-64 flex items-center justify-center">
-                        <canvas id="chart-rasio-pie"></canvas>
-                    </div>
-                </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-500 mb-1">Filter Bulan (Arsip Bulanan Excel)</label>
+              <input type="month" id="filterAdminBulan" class="w-full px-3 py-2 rounded-lg border text-sm">
             </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="btnAdminExportPDF" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+              📄 Ekspor Laporan PDF
+            </button>
+            <button id="btnAdminExportExcel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">
+              📊 Ekspor Laporan Excel Bulanan
+            </button>
+          </div>
         </div>
 
-        <!-- TAB 1: DATA SISWA -->
-        <div id="admin-tab-siswa" class="hidden space-y-4">
-            <div class="flex flex-col md:flex-row justify-between gap-3">
-                <div class="flex flex-col sm:flex-row gap-2">
-                    <button onclick="openModal('modal-add-siswa')" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
-                        + Tambah Siswa Manual
-                    </button>
-                    <label class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer">
-                        📥 Import Excel Siswa
-                        <input type="file" id="file-import-siswa" accept=".xlsx, .xls, .csv" class="hidden">
-                    </label>
-                </div>
-
-                <div class="relative w-full md:w-64">
-                    <input type="text" id="search-siswa-input" placeholder="🔍 Cari nama siswa..." class="w-full px-4 py-2 text-sm border rounded-full focus:ring-teal-500 bg-white">
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm text-left text-gray-600">
-                        <thead class="text-xs uppercase bg-slate-50 text-gray-500 border-b">
-                            <tr>
-                                <th class="px-6 py-4 font-bold">NAMA SISWA</th>
-                                <th class="px-6 py-4 font-bold">KELAS</th>
-                                <th class="px-6 py-4 font-bold text-center">PRESTASI</th>
-                                <th class="px-6 py-4 font-bold text-center w-36">AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body-siswa" class="divide-y divide-gray-100">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="bg-white rounded-xl border border-slate-200 overflow-x-auto">
+          <table class="w-full text-left text-xs text-slate-600">
+            <thead class="bg-slate-100 text-slate-700 uppercase font-semibold">
+              <tr>
+                <th class="p-3">Tanggal</th>
+                <th class="p-3">Kelas</th>
+                <th class="p-3">Nama Siswa</th>
+                <th class="p-3">Materi Hafalan</th>
+                <th class="p-3">Status</th>
+                <!-- FITUR BARU: KOLOM AKSI EDIT REKAP -->
+                <th class="p-3 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAdminRekap" class="divide-y divide-slate-100"></tbody>
+          </table>
         </div>
+      </div>
+    </section>
 
-        <!-- TAB 2: MATERI HAFALAN -->
-        <div id="admin-tab-materi" class="hidden space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-3">
-                <button onclick="openModal('modal-add-materi')" class="w-full md:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center">
-                    + Tambah Materi Manual
-                </button>
-                
-                <div class="flex flex-col sm:flex-row items-center gap-2 w-full md:w-auto justify-end">
-                    <input type="text" id="search-materi-input" placeholder="🔍 Cari nama materi..." class="w-full sm:w-48 px-3 py-2 text-sm border rounded-full bg-white">
+  </main>
 
-                    <select id="filter-materi-tabel" class="w-full sm:w-auto px-3 py-2 border rounded-lg text-sm bg-white">
-                        <option value="Semua">Semua Kelas</option>
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-400">
+    E-Smart &copy; 2026 MI Salafiyah Wareng. All rights reserved.
+  </footer>
 
-                    <label class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm shadow transition flex items-center justify-center cursor-pointer whitespace-nowrap">
-                        📥 Import Excel Materi
-                        <input type="file" id="file-import-materi" accept=".xlsx, .xls, .csv" class="hidden">
-                    </label>
-                </div>
+  <!-- SCRIPT LOGIKA UTAMA MODULAR FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { 
+      getAuth, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect,
+      getRedirectResult, GoogleAuthProvider, signOut, onAuthStateChanged,
+      setPersistence, browserLocalPersistence 
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
+    import { 
+      getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, 
+      query, where, limit, writeBatch 
+    } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+
+    // 1. FIREBASE CONFIGURATION
+    const firebaseConfig = {
+      apiKey: "AIzaSyCk3tvM-oYTkTdbAKZ8KtsFq78B7InxNNg",
+      authDomain: "e-smart-4cafa.firebaseapp.com",
+      projectId: "e-smart-4cafa",
+      storageBucket: "e-smart-4cafa.firebasestorage.app",
+      messagingSenderId: "81292236702",
+      appId: "1:81292236702:web:ae27fdbad67464867ce88f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+    const DAFTAR_KELAS = [
+      "1 Abu Bakar", "1 Umar bin Khattab", "2 Usman bin Affan", "2 Ali bin Abi Thalib", 
+      "3 Imam Hanafi", "3 Imam Maliki", "4 Imam Syafii", "4 Imam Hambali", 
+      "5 Imam Asyari", "5 Imam Maturidi", "6 Imam Ghazali", "6 Imam Junaidi"
+    ];
+
+    let currentUserRole = "guru";
+    let selectedStudentData = null;
+    let currentMateriList = [];
+    let cacheSiswaAdmin = [];
+    let cacheMateriAdmin = [];
+    let chartBarInstance = null;
+    let chartPieInstance = null;
+
+    let deferredPrompt;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(err => {}));
+    }
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault(); deferredPrompt = e;
+      const btnInstall = document.getElementById('btnInstallPWA');
+      if (btnInstall) btnInstall.classList.remove('hidden');
+    });
+    document.getElementById('btnInstallPWA').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') document.getElementById('btnInstallPWA').classList.add('hidden');
+        deferredPrompt = null;
+      }
+    });
+
+    const loadingApp = document.getElementById('loadingApp');
+    const pageLogin = document.getElementById('pageLogin');
+    const pageGuru = document.getElementById('pageGuru');
+    const pageAdmin = document.getElementById('pageAdmin');
+    const userInfoHeader = document.getElementById('userInfoHeader');
+    const userEmailText = document.getElementById('userEmailText');
+    const userRoleBadge = document.getElementById('userRoleBadge');
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('inputTanggal').value = today;
+      const filterBulan = document.getElementById('filterAdminBulan');
+      if (filterBulan) filterBulan.value = today.substring(0, 7);
+      populateKelasDropdowns();
+
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) Swal.fire({ icon: 'success', title: 'Berhasil Login', text: `Selamat datang, ${result.user.email}`, timer: 1500, showConfirmButton: false });
+      } catch (error) {}
+    });
+
+    function populateKelasDropdowns() {
+      const selectElements = [document.getElementById('selectKelasGuru'), document.getElementById('filterGuruKelas'), document.getElementById('filterAdminKelas')];
+      selectElements.forEach(select => {
+        if (!select) return;
+        select.innerHTML = select.id.startsWith('filter') ? '<option value="">Semua Kelas</option>' : '<option value="">-- Pilih Kelas --</option>';
+        DAFTAR_KELAS.forEach(k => select.innerHTML += `<option value="${k}">${k}</option>`);
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      loadingApp.classList.add('hidden');
+      if (user) {
+        currentUserRole = user.email.toLowerCase().includes('admin') ? 'admin' : 'guru';
+        userInfoHeader.classList.remove('hidden');
+        userInfoHeader.classList.add('flex');
+        userEmailText.textContent = user.email;
+        userRoleBadge.textContent = currentUserRole.toUpperCase();
+        pageLogin.classList.add('hidden');
+
+        if (currentUserRole === 'admin') {
+          pageGuru.classList.add('hidden');
+          pageAdmin.classList.remove('hidden');
+          loadAdminDataSiswa();
+          initAdminDashboardCharts();
+        } else {
+          pageAdmin.classList.add('hidden');
+          pageGuru.classList.remove('hidden');
+        }
+      } else {
+        userInfoHeader.classList.add('hidden'); userInfoHeader.classList.remove('flex');
+        pageLogin.classList.remove('hidden'); pageGuru.classList.add('hidden'); pageAdmin.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('formLogin').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      Swal.fire({ title: 'Memproses Login...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try { await signInWithEmailAndPassword(auth, email, pass); Swal.close(); } 
+      catch (err) { Swal.fire('Gagal Login', 'Email atau password salah.', 'error'); }
+    });
+
+    document.getElementById('btnGoogleLogin').addEventListener('click', async () => {
+      const provider = new GoogleAuthProvider();
+      Swal.fire({ title: 'Menghubungkan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      try { await signInWithPopup(auth, provider); Swal.close(); } 
+      catch (error) {
+        if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+          try { await signInWithRedirect(auth, provider); } catch (redErr) { Swal.fire('Gagal Login', redErr.message, 'error'); }
+        } else { Swal.fire('Gagal Login', error.message, 'error'); }
+      }
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', async () => {
+      const result = await Swal.fire({ title: 'Konfirmasi Keluar', text: "Yakin ingin keluar?", icon: 'question', showCancelButton: true, confirmButtonText: 'Ya, Keluar', cancelButtonText: 'Batal' });
+      if (result.isConfirmed) await signOut(auth);
+    });
+
+
+    // --- LOGIKA HALAMAN GURU ---
+
+    // FITUR BARU: Update Box "Belum Setor"
+    async function updateListBelumSetor() {
+      const kelas = document.getElementById('selectKelasGuru').value;
+      const tanggal = document.getElementById('inputTanggal').value;
+      const box = document.getElementById('boxBelumSetor');
+      const listUI = document.getElementById('listBelumSetor');
+      const badge = document.getElementById('badgeCountBelumSetor');
+
+      if (!kelas || !tanggal) {
+        box.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const qSiswa = query(collection(db, "students"), where("kelas", "==", kelas));
+        const snapSiswa = await getDocs(qSiswa);
+        let allSiswa = [];
+        snapSiswa.forEach(d => allSiswa.push(d.data().nama));
+
+        const qRekap = query(collection(db, "hafalan_records"), where("kelas", "==", kelas), where("tanggal", "==", tanggal));
+        const snapRekap = await getDocs(qRekap);
+        let sudahSetor = [];
+        snapRekap.forEach(d => sudahSetor.push(d.data().nama_siswa));
+
+        let belumSetor = allSiswa.filter(nama => !sudahSetor.includes(nama));
+        belumSetor.sort((a, b) => a.localeCompare(b));
+
+        if (belumSetor.length > 0) {
+          listUI.innerHTML = belumSetor.map(n => `<li>${n}</li>`).join('');
+          badge.textContent = belumSetor.length;
+          box.classList.remove('hidden');
+        } else {
+          listUI.innerHTML = '<li class="text-emerald-600 font-bold !list-none -ml-4">✨ Semua siswa di kelas ini sudah setor hari ini!</li>';
+          badge.textContent = "0";
+          box.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error("Gagal update list belum setor", err);
+      }
+    }
+
+    // Trigger update jika tanggal diganti
+    document.getElementById('inputTanggal').addEventListener('change', () => {
+      if (document.getElementById('selectKelasGuru').value) updateListBelumSetor();
+    });
+
+    document.getElementById('selectKelasGuru').addEventListener('change', async (e) => {
+      const kelas = e.target.value;
+      const selectSiswa = document.getElementById('selectSiswaGuru');
+      const selectMateri = document.getElementById('selectMateriGuru');
+      const cardInfo = document.getElementById('cardInfoHafalan');
+      const boxPanduan = document.getElementById('boxPanduanSoal');
+      const boxBadge = document.getElementById('boxBadgePrestasi');
+      const boxBelumSetor = document.getElementById('boxBelumSetor');
+      
+      selectSiswa.innerHTML = '<option value="">-- Memuat Siswa... --</option>';
+      selectSiswa.disabled = true; selectMateri.disabled = true;
+      cardInfo.classList.add('hidden'); boxPanduan.classList.add('hidden'); 
+      boxBadge.classList.add('hidden'); boxBelumSetor.classList.add('hidden');
+      resetEvaluasiButtons();
+
+      if (!kelas) return;
+
+      try {
+        const qSiswa = query(collection(db, "students"), where("kelas", "==", kelas));
+        const snapSiswa = await getDocs(qSiswa);
+        let listSiswa = [];
+        snapSiswa.forEach(d => listSiswa.push({ id: d.id, ...d.data() }));
+        listSiswa.sort((a,b) => a.nama.localeCompare(b.nama));
+
+        selectSiswa.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>';
+        listSiswa.forEach(s => selectSiswa.innerHTML += `<option value="${s.id}" data-nama="${s.nama}" data-last="${s.hafalan_terakhir || ''}" data-status="${s.status_terakhir || ''}">${s.nama}</option>`);
+        selectSiswa.disabled = false;
+
+        const qMateri = query(collection(db, "materi_list"), where("kelas", "==", kelas));
+        const snapMateri = await getDocs(qMateri);
+        currentMateriList = [];
+        snapMateri.forEach(d => currentMateriList.push({ id: d.id, ...d.data() }));
+        currentMateriList.sort((a,b) => Number(a.urutan) - Number(b.urutan));
+
+        // Panggil fungsi list siswa belum setor
+        updateListBelumSetor();
+
+      } catch (err) { Swal.fire('Error', 'Gagal memuat data kelas.', 'error'); }
+    });
+
+    document.getElementById('selectSiswaGuru').addEventListener('change', async (e) => {
+      const select = e.target;
+      const selectedOption = select.options[select.selectedIndex];
+      const selectMateri = document.getElementById('selectMateriGuru');
+      const cardInfo = document.getElementById('cardInfoHafalan');
+      const boxPanduan = document.getElementById('boxPanduanSoal');
+      const boxBadge = document.getElementById('boxBadgePrestasi');
+
+      if (!select.value) {
+        cardInfo.classList.add('hidden'); boxPanduan.classList.add('hidden'); boxBadge.classList.add('hidden');
+        selectMateri.disabled = true; resetEvaluasiButtons(); return;
+      }
+
+      const nama = selectedOption.getAttribute('data-nama');
+      const hafalanTerakhir = selectedOption.getAttribute('data-last') || 'Belum Ada';
+      const statusTerakhir = selectedOption.getAttribute('data-status') || '-';
+      const kelas = document.getElementById('selectKelasGuru').value;
+
+      selectedStudentData = { id: select.value, nama, hafalanTerakhir, statusTerakhir };
+      document.getElementById('textHafalanTerakhir').textContent = hafalanTerakhir;
+      
+      const badgeStatus = document.getElementById('badgeStatusTerakhir');
+      badgeStatus.textContent = statusTerakhir;
+      if (statusTerakhir === 'Lancar') badgeStatus.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800";
+      else if (statusTerakhir === 'Tidak Lancar') badgeStatus.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800";
+      else badgeStatus.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600";
+
+      try {
+        const qHistory = query(collection(db, "hafalan_records"), where("nama_siswa", "==", nama), where("kelas", "==", kelas), limit(5));
+        const snapHist = await getDocs(qHistory);
+        let recs = []; snapHist.forEach(d => recs.push(d.data()));
+        recs.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+        let consecutiveLancar = 0;
+        for (let r of recs) { if (r.status_evaluasi === 'Lancar') consecutiveLancar++; else break; }
+        if (consecutiveLancar >= 3) {
+          document.getElementById('textBadgePrestasi').textContent = `Bintang Numerasi (${consecutiveLancar}x Lancar Berturut-turut!)`;
+          boxBadge.classList.remove('hidden');
+        } else { boxBadge.classList.add('hidden'); }
+      } catch (err) {}
+
+      let targetRekomendasi = ""; let targetMateriObj = null;
+      if (currentMateriList.length === 0) targetRekomendasi = "Belum Ada Data Materi di Kelas Ini";
+      else if (!hafalanTerakhir || hafalanTerakhir === 'Belum Ada' || statusTerakhir === 'Tidak Lancar') {
+        targetMateriObj = currentMateriList.find(m => m.nama_materi === hafalanTerakhir) || currentMateriList[0];
+        targetRekomendasi = targetMateriObj ? targetMateriObj.nama_materi : currentMateriList[0].nama_materi;
+      } else {
+        const lastIdx = currentMateriList.findIndex(m => m.nama_materi === hafalanTerakhir);
+        if (lastIdx !== -1 && lastIdx + 1 < currentMateriList.length) {
+          targetMateriObj = currentMateriList[lastIdx + 1]; targetRekomendasi = targetMateriObj.nama_materi;
+        } else if (lastIdx + 1 >= currentMateriList.length) targetRekomendasi = "Telah Menyelesaikan Seluruh Materi!";
+        else { targetMateriObj = currentMateriList[0]; targetRekomendasi = currentMateriList[0].nama_materi; }
+      }
+
+      document.getElementById('textRekomendasiTarget').textContent = targetRekomendasi;
+      cardInfo.classList.remove('hidden');
+      selectMateri.innerHTML = '<option value="">-- Pilih Materi Setoran --</option>';
+      currentMateriList.forEach(m => {
+        const isSelected = (targetMateriObj && m.nama_materi === targetMateriObj.nama_materi) ? 'selected' : '';
+        selectMateri.innerHTML += `<option value="${m.nama_materi}" ${isSelected}>${m.urutan}. ${m.nama_materi}</option>`;
+      });
+      selectMateri.disabled = false; selectMateri.dispatchEvent(new Event('change'));
+      document.getElementById('btnEvaluasiLancar').disabled = false; document.getElementById('btnEvaluasiUlang').disabled = false;
+    });
+
+    document.getElementById('selectMateriGuru').addEventListener('change', (e) => {
+      const namaMateri = e.target.value;
+      const boxPanduan = document.getElementById('boxPanduanSoal');
+      const tbodyPanduan = document.getElementById('tbodyPanduanSoal');
+
+      if (!namaMateri) { boxPanduan.classList.add('hidden'); return; }
+      const materiObj = currentMateriList.find(m => m.nama_materi === namaMateri);
+      if (materiObj && materiObj.panduan_soal && materiObj.panduan_soal.length > 0) {
+        tbodyPanduan.innerHTML = '';
+        materiObj.panduan_soal.forEach(item => {
+          tbodyPanduan.innerHTML += `<tr class="hover:bg-emerald-50/50"><td class="p-3 font-semibold text-slate-800">${item.soal}</td><td class="p-3 text-slate-600 font-medium">${item.jawaban}</td></tr>`;
+        });
+        boxPanduan.classList.remove('hidden');
+      } else { boxPanduan.classList.add('hidden'); }
+    });
+
+    function resetEvaluasiButtons() {
+      document.getElementById('btnEvaluasiLancar').disabled = true; document.getElementById('btnEvaluasiUlang').disabled = true;
+    }
+
+    async function simpanEvaluasi(statusEvaluasi) {
+      const tanggal = document.getElementById('inputTanggal').value;
+      const kelas = document.getElementById('selectKelasGuru').value;
+      const namaSiswa = selectedStudentData ? selectedStudentData.nama : '';
+      const materiHafalan = document.getElementById('selectMateriGuru').value;
+
+      if (!tanggal || !kelas || !namaSiswa || !materiHafalan) { Swal.fire('Peringatan', 'Harap lengkapi formulir!', 'warning'); return; }
+      Swal.fire({ title: 'Menyimpan Data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      try {
+        const qCek = query(collection(db, "hafalan_records"), where("tanggal", "==", tanggal), where("nama_siswa", "==", namaSiswa), where("kelas", "==", kelas));
+        const snapCek = await getDocs(qCek);
+        if (!snapCek.empty) {
+          Swal.fire({ icon: 'error', title: 'Penolakan Simpan', text: `Siswa ${namaSiswa} sudah diinput setoran pada tanggal ${tanggal}!`});
+          return;
+        }
+
+        await addDoc(collection(db, "hafalan_records"), { tanggal, kelas, nama_siswa: namaSiswa, materi_hafalan: materiHafalan, status_evaluasi: statusEvaluasi });
+        await updateDoc(doc(db, "students", selectedStudentData.id), { hafalan_terakhir: materiHafalan, status_terakhir: statusEvaluasi });
+
+        Swal.fire({ icon: 'success', title: 'Berhasil!', text: `Hafalan diset "${statusEvaluasi}"`, timer: 1500, showConfirmButton: false });
+        
+        // Reset and Update Box Belum Setor
+        document.getElementById('selectKelasGuru').dispatchEvent(new Event('change'));
+        setTimeout(updateListBelumSetor, 500);
+
+      } catch (err) { Swal.fire('Gagal', 'Terjadi kesalahan.', 'error'); }
+    }
+
+    document.getElementById('btnEvaluasiLancar').addEventListener('click', () => simpanEvaluasi('Lancar'));
+    document.getElementById('btnEvaluasiUlang').addEventListener('click', () => simpanEvaluasi('Tidak Lancar'));
+
+
+    document.getElementById('btnGuruCetakPDF').addEventListener('click', async () => {
+      const kelas = document.getElementById('filterGuruKelas').value;
+      const tanggal = document.getElementById('filterGuruTanggal').value;
+      Swal.fire({ title: 'Membuat PDF...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      try {
+        let constraints = [];
+        if (kelas) constraints.push(where("kelas", "==", kelas));
+        if (tanggal) constraints.push(where("tanggal", "==", tanggal));
+
+        const snapPDF = await getDocs(query(collection(db, "hafalan_records"), ...constraints));
+        let records = []; snapPDF.forEach(d => records.push(d.data()));
+
+        if (records.length === 0) { Swal.fire('Info', 'Tidak ada data laporan.', 'info'); return; }
+        records.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+
+        const { jsPDF } = window.jspdf; const docPDF = new jsPDF();
+        const pageWidth = docPDF.internal.pageSize.getWidth(); const pageHeight = docPDF.internal.pageSize.getHeight();
+
+        docPDF.setFont("helvetica", "bold"); docPDF.setFontSize(14); docPDF.setTextColor(15, 118, 110);
+        docPDF.text("E Smart - Monitoring Numerasi Siswa", pageWidth / 2, 15, { align: "center" });
+        docPDF.setFontSize(12); docPDF.setTextColor(0, 0, 0);
+        docPDF.text("MI Salafiyah Wareng", pageWidth / 2, 22, { align: "center" });
+        docPDF.setFont("helvetica", "normal"); docPDF.setFontSize(10);
+        docPDF.text(`Kelas: ${kelas || 'Semua Kelas'} | Hari / Tanggal: ${tanggal || 'Semua Tanggal'}`, pageWidth / 2, 28, { align: "center" });
+
+        docPDF.setLineWidth(0.5); docPDF.setDrawColor(15, 118, 110); docPDF.line(14, 32, pageWidth - 14, 32);
+
+        const tableBody = records.map((r, i) => [ i + 1, r.tanggal, r.kelas, r.nama_siswa, r.materi_hafalan, r.status_evaluasi === 'Lancar' ? 'Lanjut' : 'Ulang' ]);
+        docPDF.autoTable({
+          startY: 36, head: [['No', 'Tanggal', 'Kelas', 'Nama Siswa', 'Materi Hafalan', 'Keterangan']], body: tableBody,
+          theme: 'striped', headStyles: { fillColor: [15, 118, 110], halign: 'center' },
+          didDrawPage: (data) => { docPDF.setFontSize(8); docPDF.setTextColor(100, 116, 139); docPDF.text("Dokumen Resmi E-Smart MI Salafiyah Wareng", 14, pageHeight - 10); docPDF.text(`Halaman ${data.pageNumber}`, pageWidth - 14, pageHeight - 10, { align: "right" }); }
+        });
+
+        Swal.close(); docPDF.save(`Laporan_Hafalan_${kelas || 'Semua'}_${tanggal || 'Semua'}.pdf`);
+      } catch (err) { Swal.fire('Error', 'Gagal PDF.', 'error'); }
+    });
+
+
+    // --- LOGIKA HALAMAN ADMINISTRATOR ---
+
+    async function initAdminDashboardCharts() {
+      try {
+        const snap = await getDocs(collection(db, "hafalan_records"));
+        let records = []; snap.forEach(d => records.push(d.data()));
+        const currentMonth = new Date().toISOString().substring(0, 7);
+        const recordsBulanIni = records.filter(r => r.tanggal && r.tanggal.startsWith(currentMonth));
+
+        const kelasCounts = {}; DAFTAR_KELAS.forEach(k => kelasCounts[k] = { lancar: 0, ulang: 0 });
+        recordsBulanIni.forEach(r => {
+          if (kelasCounts[r.kelas]) { if (r.status_evaluasi === 'Lancar') kelasCounts[r.kelas].lancar++; else kelasCounts[r.kelas].ulang++; }
+        });
+
+        const labelsKelas = DAFTAR_KELAS.map(k => k.split(' ')[0] + ' ' + k.split(' ')[1]);
+        const dataLancar = DAFTAR_KELAS.map(k => kelasCounts[k].lancar);
+        const dataUlang = DAFTAR_KELAS.map(k => kelasCounts[k].ulang);
+
+        const ctxBar = document.getElementById('chartEvaluasiKelas').getContext('2d');
+        if (chartBarInstance) chartBarInstance.destroy();
+        chartBarInstance = new Chart(ctxBar, { type: 'bar', data: { labels: labelsKelas, datasets: [ { label: 'Lancar (Lanjut)', data: dataLancar, backgroundColor: '#10b981' }, { label: 'Tidak Lancar (Ulang)', data: dataUlang, backgroundColor: '#f59e0b' } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { boxWidth: 10, font: { size: 10 } } } }, scales: { x: { ticks: { font: { size: 9 } } }, y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+
+        let totalLancar = recordsBulanIni.filter(r => r.status_evaluasi === 'Lancar').length;
+        let totalUlang = recordsBulanIni.filter(r => r.status_evaluasi === 'Tidak Lancar').length;
+        document.getElementById('textTotalSetoranBulan').textContent = `Total Setoran Bulan Ini: ${recordsBulanIni.length}`;
+
+        const ctxPie = document.getElementById('chartPieKelancaran').getContext('2d');
+        if (chartPieInstance) chartPieInstance.destroy();
+        chartPieInstance = new Chart(ctxPie, { type: 'doughnut', data: { labels: ['Lancar', 'Ulang'], datasets: [{ data: [totalLancar, totalUlang], backgroundColor: ['#10b981', '#f59e0b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } } } });
+      } catch (err) {}
+    }
+
+
+    const tabBtns = [
+      { btn: document.getElementById('tabBtnSiswa'), content: document.getElementById('tabContentSiswa') },
+      { btn: document.getElementById('tabBtnMateri'), content: document.getElementById('tabContentMateri') },
+      { btn: document.getElementById('tabBtnRekap'), content: document.getElementById('tabContentRekap') }
+    ];
+
+    tabBtns.forEach(({ btn, content }) => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(t => { t.btn.className = "py-2 px-4 border-b-2 border-transparent font-medium text-slate-500 hover:text-slate-700 text-sm whitespace-nowrap"; t.content.classList.add('hidden'); });
+        btn.className = "py-2 px-4 border-b-2 border-teal-600 font-bold text-teal-700 text-sm whitespace-nowrap"; content.classList.remove('hidden');
+        if (content.id === 'tabContentSiswa') loadAdminDataSiswa();
+        if (content.id === 'tabContentMateri') loadAdminDataMateri();
+        if (content.id === 'tabContentRekap') loadAdminRekap();
+      });
+    });
+
+    // 1. DATA SISWA MANAGEMENT 
+    async function loadAdminDataSiswa() {
+      document.getElementById('tbodyAdminSiswa').innerHTML = '<tr><td colspan="4" class="p-4 text-center">Memuat Data...</td></tr>';
+      try {
+        const snap = await getDocs(collection(db, "students"));
+        cacheSiswaAdmin = []; snap.forEach(d => cacheSiswaAdmin.push({ id: d.id, ...d.data() }));
+        cacheSiswaAdmin.sort((a,b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
+        renderTableSiswa(cacheSiswaAdmin);
+      } catch (err) {}
+    }
+
+    function renderTableSiswa(list) {
+      const tbody = document.getElementById('tbodyAdminSiswa');
+      if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-center">Data siswa tidak ditemukan.</td></tr>'; return; }
+      tbody.innerHTML = '';
+      list.forEach(s => {
+        tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-medium text-slate-800">${s.nama}</td><td class="p-3">${s.kelas}</td><td class="p-3">${s.hafalan_terakhir || '-'} (${s.status_terakhir || '-'})</td><td class="p-3 text-center flex justify-center gap-1"><button onclick="editSiswa('${s.id}', '${s.nama.replace(/'/g, "\\'")}', '${s.kelas}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded text-[10px]">Edit</button><button onclick="hapusSiswa('${s.id}', '${s.nama.replace(/'/g, "\\'")}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-[10px]">Hapus</button></td></tr>`;
+      });
+    }
+
+    document.getElementById('searchAdminSiswa').addEventListener('input', (e) => {
+      const kw = e.target.value.toLowerCase().trim();
+      renderTableSiswa(cacheSiswaAdmin.filter(s => s.nama.toLowerCase().includes(kw) || s.kelas.toLowerCase().includes(kw)));
+    });
+
+    window.editSiswa = async (id, currentNama, currentKelas) => { /* Code shortened for clarity - logic remains exactly the same */
+      let optionsKelasHTML = DAFTAR_KELAS.map(k => `<option value="${k}" ${k === currentKelas ? 'selected' : ''}>${k}</option>`).join('');
+      const { value: formValues } = await Swal.fire({ title: 'Edit Data Siswa', html: `<div class="space-y-3 text-left"><div><label class="text-xs font-bold text-slate-600">NAMA SISWA</label><input id="swalEditNamaSiswa" class="swal2-input !m-0 !w-full" value="${currentNama}"></div><div><label class="text-xs font-bold text-slate-600">KELAS</label><select id="swalEditKelasSiswa" class="swal2-input !m-0 !w-full">${optionsKelasHTML}</select></div></div>`, focusConfirm: false, showCancelButton: true, confirmButtonText: 'Perbarui Data', preConfirm: () => { const nama = document.getElementById('swalEditNamaSiswa').value; const kelas = document.getElementById('swalEditKelasSiswa').value; if (!nama || !kelas) { Swal.showValidationMessage('Wajib diisi!'); return false; } return { nama, kelas }; } });
+      if (formValues) { Swal.fire({ title: 'Memperbarui...', allowOutsideClick: false, didOpen: () => Swal.showLoading() }); await updateDoc(doc(db, "students", id), { nama: formValues.nama, kelas: formValues.kelas }); Swal.fire('Berhasil', 'Siswa diperbarui.', 'success'); loadAdminDataSiswa(); }
+    };
+    window.hapusSiswa = async (id, nama) => { const res = await Swal.fire({ title: 'Hapus', text: `Hapus data siswa ${nama}?`, icon: 'warning', showCancelButton: true, confirmButtonText: 'Hapus' }); if (res.isConfirmed) { await deleteDoc(doc(db, "students", id)); loadAdminDataSiswa(); } };
+
+    // 2. MATERI HAFALAN MANAGEMENT (Sama seperti sebelumnya)
+    async function loadAdminDataMateri() {
+      document.getElementById('tbodyAdminMateri').innerHTML = '<tr><td colspan="5" class="p-4 text-center">Memuat Data...</td></tr>';
+      try {
+        const snap = await getDocs(collection(db, "materi_list"));
+        cacheMateriAdmin = []; snap.forEach(d => cacheMateriAdmin.push({ id: d.id, ...d.data() }));
+        cacheMateriAdmin.sort((a,b) => a.kelas.localeCompare(b.kelas) || Number(a.urutan) - Number(b.urutan));
+        renderTableMateri(cacheMateriAdmin);
+      } catch (err) {}
+    }
+
+    function renderTableMateri(list) {
+      const tbody = document.getElementById('tbodyAdminMateri');
+      if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center">Data materi tidak ditemukan.</td></tr>'; return; }
+      tbody.innerHTML = '';
+      list.forEach(m => {
+        const jmlSoal = m.panduan_soal ? m.panduan_soal.length : 0;
+        tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-3 font-medium">${m.kelas}</td><td class="p-3">${m.urutan}</td><td class="p-3 font-semibold text-slate-800">${m.nama_materi}</td><td class="p-3 font-bold text-teal-700">${jmlSoal} Soal</td><td class="p-3 text-center flex justify-center gap-1"><button onclick="editMateri('${m.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded text-[10px]">Edit</button><button onclick="hapusMateri('${m.id}', '${m.nama_materi.replace(/'/g, "\\'")}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-[10px]">Hapus</button></td></tr>`;
+      });
+    }
+
+    document.getElementById('searchAdminMateri').addEventListener('input', (e) => {
+      const kw = e.target.value.toLowerCase().trim();
+      renderTableMateri(cacheMateriAdmin.filter(m => m.nama_materi.toLowerCase().includes(kw) || m.kelas.toLowerCase().includes(kw)));
+    });
+
+
+    // 3. REKAPITULASI ADMIN - FITUR BARU EDIT DAN HAPUS DATA REKAP
+    async function loadAdminRekap() {
+      const tbody = document.getElementById('tbodyAdminRekap');
+      const kelas = document.getElementById('filterAdminKelas').value;
+      const bulan = document.getElementById('filterAdminBulan').value;
+      tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Memuat Data...</td></tr>';
+
+      try {
+        let constraints = []; if (kelas) constraints.push(where("kelas", "==", kelas));
+        const q = query(collection(db, "hafalan_records"), ...constraints);
+        const snap = await getDocs(q);
+        let list = [];
+        snap.forEach(d => {
+          const item = d.data();
+          if (!bulan || (item.tanggal && item.tanggal.startsWith(bulan))) list.push({ id: d.id, ...item });
+        });
+
+        list.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+        if (list.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Tidak ada catatan hafalan.</td></tr>'; return; }
+
+        tbody.innerHTML = '';
+        list.forEach(r => {
+          const badgeClass = r.status_evaluasi === 'Lancar' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800';
+          tbody.innerHTML += `
+            <tr class="hover:bg-slate-50">
+              <td class="p-3 font-mono">${r.tanggal}</td>
+              <td class="p-3">${r.kelas}</td>
+              <td class="p-3 font-semibold text-slate-800">${r.nama_siswa}</td>
+              <td class="p-3">${r.materi_hafalan}</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${badgeClass}">${r.status_evaluasi}</span></td>
+              <td class="p-3 text-center flex justify-center gap-1">
+                <button onclick="editRekap('${r.id}', '${r.nama_siswa.replace(/'/g, "\\'")}', '${r.materi_hafalan}', '${r.status_evaluasi}', '${r.tanggal}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded text-[10px]">Edit</button>
+                <button onclick="hapusRekap('${r.id}', '${r.nama_siswa.replace(/'/g, "\\'")}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-[10px]">Hapus</button>
+              </td>
+            </tr>
+          `;
+        });
+      } catch (err) {}
+    }
+
+    document.getElementById('filterAdminKelas').addEventListener('change', loadAdminRekap);
+    document.getElementById('filterAdminBulan').addEventListener('change', loadAdminRekap);
+
+    // FUNGSI EDIT REKAP HAFALAN OLEH ADMIN
+    window.editRekap = async (id, nama, materi, status, tanggal) => {
+      const { value: formValues } = await Swal.fire({
+        title: 'Perbaikan Data Setoran',
+        html: `
+          <div class="space-y-3 text-left">
+            <div>
+              <label class="text-xs font-bold text-slate-600">NAMA SISWA</label>
+              <input class="swal2-input !m-0 !w-full bg-slate-100 text-slate-500" value="${nama}" disabled>
             </div>
-
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full text-sm text-left text-gray-600">
-                        <thead class="text-xs uppercase bg-slate-50 text-gray-500 border-b">
-                            <tr>
-                                <th class="px-6 py-4 font-bold">KELAS</th>
-                                <th class="px-6 py-4 font-bold w-24">URUTAN</th>
-                                <th class="px-6 py-4 font-bold">NAMA MATERI</th>
-                                <th class="px-6 py-4 font-bold text-center w-36">AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body-materi" class="divide-y divide-gray-100">
-                        </tbody>
-                    </table>
-                </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">TANGGAL SETORAN</label>
+              <input type="date" id="swalEditTanggalRekap" class="swal2-input !m-0 !w-full" value="${tanggal}">
             </div>
-        </div>
-
-        <!-- TAB 3: REKAP & KELOLA SETORAN HAFALAN -->
-        <div id="admin-tab-rekap" class="hidden space-y-6">
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Rekapitulasi & Ekspor Laporan</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
-                        <h4 class="font-bold text-gray-800 text-sm border-b pb-1">1. Laporan Harian (PDF)</h4>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600">Pilih Kelas</label>
-                            <select id="filter-kelas-pdf-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
-                                <option value="">Semua Kelas</option>
-                                <option value="1 Abu Bakar">1 Abu Bakar</option>
-                                <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                                <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                                <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                                <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                                <option value="3 Imam Maliki">3 Imam Maliki</option>
-                                <option value="4 Imam Syafii">4 Imam Syafii</option>
-                                <option value="4 Imam Hambali">4 Imam Hambali</option>
-                                <option value="5 Imam Asyari">5 Imam Asyari</option>
-                                <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                                <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                                <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-600">Pilih Tanggal</label>
-                            <input type="date" id="filter-tanggal-pdf-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
-                        </div>
-                        <button id="btn-download-pdf-admin" class="w-full bg-red-600 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-red-700 flex items-center justify-center shadow text-sm">
-                            Download Laporan PDF
-                        </button>
-                    </div>
-
-                    <div class="bg-teal-50 p-4 rounded-xl border border-teal-200 space-y-3">
-                        <h4 class="font-bold text-teal-900 text-sm border-b border-teal-200 pb-1">2. Arsip Bulanan (Excel)</h4>
-                        <div>
-                            <label class="block text-xs font-semibold text-teal-800">Pilih Kelas</label>
-                            <select id="filter-kelas-excel-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
-                                <option value="">Semua Kelas</option>
-                                <option value="1 Abu Bakar">1 Abu Bakar</option>
-                                <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                                <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                                <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                                <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                                <option value="3 Imam Maliki">3 Imam Maliki</option>
-                                <option value="4 Imam Syafii">4 Imam Syafii</option>
-                                <option value="4 Imam Hambali">4 Imam Hambali</option>
-                                <option value="5 Imam Asyari">5 Imam Asyari</option>
-                                <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                                <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                                <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-teal-800">Pilih Bulan & Tahun</label>
-                            <input type="month" id="filter-bulan-excel-admin" class="mt-1 w-full px-3 py-2 border rounded-lg bg-white text-sm">
-                        </div>
-                        <button id="btn-download-excel-admin" class="w-full bg-teal-700 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-teal-800 flex items-center justify-center shadow text-sm">
-                            Download Excel Bulanan
-                        </button>
-                    </div>
-                </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">MATERI HAFALAN</label>
+              <input id="swalEditMateriRekap" class="swal2-input !m-0 !w-full" value="${materi}">
             </div>
-
-            <!-- FITUR BARU: EDIT & KELOLA DATA HAFALAN (ADMINISTRATOR) -->
-            <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 gap-2">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-800">Daftar & Kelola Setoran Hafalan</h3>
-                        <p class="text-xs text-gray-500">Edit atau hapus data riwayat hafalan siswa yang telah diinput</p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                        <select id="filter-hafalan-kelas-admin" class="px-3 py-1.5 border rounded-lg text-xs bg-white">
-                            <option value="">Semua Kelas</option>
-                            <option value="1 Abu Bakar">1 Abu Bakar</option>
-                            <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                            <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                            <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                            <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                            <option value="3 Imam Maliki">3 Imam Maliki</option>
-                            <option value="4 Imam Syafii">4 Imam Syafii</option>
-                            <option value="4 Imam Hambali">4 Imam Hambali</option>
-                            <option value="5 Imam Asyari">5 Imam Asyari</option>
-                            <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                            <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                            <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                        </select>
-                        <input type="date" id="filter-hafalan-tanggal-admin" class="px-3 py-1.5 border rounded-lg text-xs bg-white">
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-left text-gray-600">
-                            <thead class="text-xs uppercase bg-slate-50 text-gray-500 border-b">
-                                <tr>
-                                    <th class="px-4 py-3 font-bold">TANGGAL</th>
-                                    <th class="px-4 py-3 font-bold">KELAS</th>
-                                    <th class="px-4 py-3 font-bold">NAMA SISWA</th>
-                                    <th class="px-4 py-3 font-bold">MATERI</th>
-                                    <th class="px-4 py-3 font-bold text-center">STATUS</th>
-                                    <th class="px-4 py-3 font-bold text-center w-32">AKSI</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body-hafalan-admin" class="divide-y divide-gray-100 text-xs">
-                                <tr><td colspan="6" class="text-center py-6 text-gray-400">Memuat data hafalan...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div>
+              <label class="text-xs font-bold text-slate-600">STATUS / KETERANGAN</label>
+              <select id="swalEditStatusRekap" class="swal2-input !m-0 !w-full">
+                <option value="Lancar" ${status === 'Lancar' ? 'selected' : ''}>Lancar</option>
+                <option value="Tidak Lancar" ${status === 'Tidak Lancar' ? 'selected' : ''}>Tidak Lancar</option>
+              </select>
             </div>
-        </div>
+          </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Simpan Perubahan',
+        preConfirm: () => {
+          const tgl = document.getElementById('swalEditTanggalRekap').value;
+          const mtr = document.getElementById('swalEditMateriRekap').value;
+          const sts = document.getElementById('swalEditStatusRekap').value;
+          if (!tgl || !mtr || !sts) { Swal.showValidationMessage('Semua kolom wajib diisi!'); return false; }
+          return { tanggal: tgl, materi_hafalan: mtr, status_evaluasi: sts };
+        }
+      });
 
-    </div>
-
-    <!-- MODAL EDIT/TAMBAH SISWA & MATERI -->
-    <div id="modal-add-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-gray-800">Tambah Data Siswa</h3>
-                <button onclick="closeModal('modal-add-siswa')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form id="form-add-siswa" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap Siswa</label>
-                    <input type="text" id="new-siswa-nama" required placeholder="Contoh: Budi Santoso" class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
-                    <select id="new-siswa-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
-                        <option value="">Pilih Kelas</option>
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Simpan Siswa</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-edit-siswa" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-gray-800">Edit Data Siswa</h3>
-                <button onclick="closeModal('modal-edit-siswa')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form id="form-edit-siswa" class="space-y-4">
-                <input type="hidden" id="edit-siswa-id">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Lengkap Siswa</label>
-                    <input type="text" id="edit-siswa-nama" required class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
-                    <select id="edit-siswa-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600">Update Siswa</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-add-materi" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-gray-800">Tambah Materi Hafalan</h3>
-                <button onclick="closeModal('modal-add-materi')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form id="form-add-materi" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Materi</label>
-                    <input type="text" id="new-materi-nama" required placeholder="Contoh: Jilid 1 Halaman 1" class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
-                    <select id="new-materi-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
-                        <option value="">Pilih Kelas</option>
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nomor Urut</label>
-                    <input type="number" id="new-materi-urut" required placeholder="Contoh: 1" class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-                <button type="submit" class="w-full bg-teal-600 text-white font-bold py-2 rounded-lg hover:bg-teal-700">Simpan Materi</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modal-edit-materi" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-gray-800">Edit Materi Hafalan</h3>
-                <button onclick="closeModal('modal-edit-materi')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form id="form-edit-materi" class="space-y-4">
-                <input type="hidden" id="edit-materi-id">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nama Materi</label>
-                    <input type="text" id="edit-materi-nama" required class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Pilih Kelas</label>
-                    <select id="edit-materi-kelas" required class="mt-1 w-full px-3 py-2 border rounded-lg">
-                        <option value="1 Abu Bakar">1 Abu Bakar</option>
-                        <option value="1 Umar bin Khattab">1 Umar bin Khattab</option>
-                        <option value="2 Usman bin Affan">2 Usman bin Affan</option>
-                        <option value="2 Ali bin Abi Thalib">2 Ali bin Abi Thalib</option>
-                        <option value="3 Imam Hanafi">3 Imam Hanafi</option>
-                        <option value="3 Imam Maliki">3 Imam Maliki</option>
-                        <option value="4 Imam Syafii">4 Imam Syafii</option>
-                        <option value="4 Imam Hambali">4 Imam Hambali</option>
-                        <option value="5 Imam Asyari">5 Imam Asyari</option>
-                        <option value="5 Imam Maturidi">5 Imam Maturidi</option>
-                        <option value="6 Imam Ghazali">6 Imam Ghazali</option>
-                        <option value="6 Imam Junaidi">6 Imam Junaidi</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Nomor Urut</label>
-                    <input type="number" id="edit-materi-urut" required class="mt-1 w-full px-3 py-2 border rounded-lg">
-                </div>
-                <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600">Update Materi</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL KHUSUS EDIT SETORAN HAFALAN (ADMINISTRATOR) -->
-    <div id="modal-edit-hafalan" class="modal hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="text-lg font-bold text-gray-800">Edit Data Setoran Hafalan</h3>
-                <button onclick="closeModal('modal-edit-hafalan')" class="text-gray-400 hover:text-red-500 font-bold text-xl">&times;</button>
-            </div>
-            <form id="form-edit-hafalan" class="space-y-4">
-                <input type="hidden" id="edit-hafalan-id">
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600">Tanggal Setor</label>
-                    <input type="date" id="edit-hafalan-tanggal" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-white">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600">Kelas</label>
-                    <input type="text" id="edit-hafalan-kelas" readonly class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-gray-100 text-gray-600 cursor-not-allowed">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600">Nama Siswa</label>
-                    <input type="text" id="edit-hafalan-siswa" readonly class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-gray-100 text-gray-600 cursor-not-allowed">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600">Materi Hafalan</label>
-                    <input type="text" id="edit-hafalan-materi" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-gray-600">Status Evaluasi</label>
-                    <select id="edit-hafalan-status" required class="mt-1 w-full px-3 py-2 border rounded-lg text-sm bg-white">
-                        <option value="Lanjut">Lanjut</option>
-                        <option value="Ulang">Ulang</option>
-                    </select>
-                </div>
-                <button type="submit" class="w-full bg-amber-500 text-white font-bold py-2 rounded-lg hover:bg-amber-600 shadow">Simpan Perubahan Hafalan</button>
-            </form>
-        </div>
-    </div>
-
-    </div>
-
-    <!-- FOOTER RESMI APLIKASI -->
-    <footer class="bg-slate-800 text-slate-400 text-center py-4 text-xs border-t border-slate-700 mt-10">
-        <p>© 2026 E-Tahsin MI Salafiyah Wareng. All Rights Reserved.</p>
-    </footer>
-
-    <!-- REGISTRASI SERVICE WORKER UNTUK PWA -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker terdaftar:', reg.scope))
-                    .catch(err => console.error('Registrasi SW gagal:', err));
+      if (formValues) {
+        Swal.fire({ title: 'Menyimpan Perubahan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        try {
+          // 1. Update data di hafalan_records
+          await updateDoc(doc(db, "hafalan_records", id), formValues);
+          
+          // 2. Sinkronisasi (Timpa) status siswa di koleksi students (Agar esok hari tetap valid)
+          const qSiswa = query(collection(db, "students"), where("nama", "==", nama));
+          const snapSiswa = await getDocs(qSiswa);
+          if(!snapSiswa.empty) {
+            const docId = snapSiswa.docs[0].id;
+            await updateDoc(doc(db, "students", docId), {
+              hafalan_terakhir: formValues.materi_hafalan,
+              status_terakhir: formValues.status_evaluasi
             });
+          }
+
+          Swal.fire('Berhasil', 'Data setoran siswa berhasil diperbaiki.', 'success');
+          loadAdminRekap();
+          initAdminDashboardCharts(); // Perbarui grafik
+        } catch (e) {
+          Swal.fire('Error', e.message, 'error');
         }
-    </script>
+      }
+    };
 
-    <!-- SCRIPT LOGIKA UTAMA FIREBASE & APP -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
-            from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy, limit } 
-            from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    // FUNGSI HAPUS REKAP HAFALAN
+    window.hapusRekap = async (id, nama) => {
+      const res = await Swal.fire({
+        title: 'Hapus Setoran?',
+        text: `Apakah Anda yakin ingin menghapus catatan setoran milik ${nama}?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
+      });
+      if (res.isConfirmed) {
+        Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        await deleteDoc(doc(db, "hafalan_records", id));
+        Swal.fire('Terhapus', 'Catatan setoran telah dihapus.', 'success');
+        loadAdminRekap();
+        initAdminDashboardCharts();
+      }
+    };
 
-        // CONFIG FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyA7kpnyUzgEBrFo6ElBcrx8CgbnhmSexaA",
-            authDomain: "e-tahsin.firebaseapp.com",
-            databaseURL: "https://e-tahsin-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "e-tahsin",
-            storageBucket: "e-tahsin.firebasestorage.app",
-            messagingSenderId: "346365600365",
-            appId: "1:346365600365:web:c60146dae2b1e0523a9564",
-            measurementId: "G-E64FGX53C2"
-        };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const googleProvider = new GoogleAuthProvider();
-
-        getRedirectResult(auth).catch((error) => {
-            console.error("Gagal menangkap redirect:", error);
-            Swal.fire('Gagal Login', error.message, 'error');
-        });
-
-        // FUNGSI MENGAMBIL TANGGAL OTOMATIS BERDASARKAN WAKTU INDONESIA BARAT (WIB / Asia/Jakarta)
-        function getWIBDateString() {
-            const now = new Date();
-            const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' };
-            const formatter = new Intl.DateTimeFormat('en-CA', options); // format en-CA menghasilkan YYYY-MM-DD
-            return formatter.format(now);
+    // EKSPOR EXCEL & PDF - SAMA SEPERTI SEBELUMNYA (MENGGUNAKAN records MAP)
+    document.getElementById('btnAdminExportExcel').addEventListener('click', async () => {
+      const kelas = document.getElementById('filterAdminKelas').value;
+      const bulan = document.getElementById('filterAdminBulan').value;
+      let constraints = []; if (kelas) constraints.push(where("kelas", "==", kelas));
+      const snap = await getDocs(query(collection(db, "hafalan_records"), ...constraints));
+      let dataExcel = []; let no = 1;
+      snap.forEach(d => {
+        const r = d.data();
+        if (!bulan || (r.tanggal && r.tanggal.startsWith(bulan))) {
+          dataExcel.push({ "no": no++, "tanggal": r.tanggal, "nama siswa": r.nama_siswa, "kelas": r.kelas, "materi hafalan": r.materi_hafalan, "keterangan": r.status_evaluasi === 'Lancar' ? 'Lanjut' : 'Ulang' });
         }
-
-        // Tanggal Defaults (Otomatis WIB & Tetap Dapat Diubah Manual)
-        const todayWIB = getWIBDateString();
-        const currentMonthWIB = todayWIB.slice(0, 7);
-
-        document.getElementById('input-tanggal').value = todayWIB;
-        document.getElementById('filter-tanggal-guru').value = todayWIB;
-        document.getElementById('filter-tanggal-pdf-admin').value = todayWIB;
-        document.getElementById('filter-bulan-excel-admin').value = currentMonthWIB;
-        document.getElementById('filter-hafalan-tanggal-admin').value = todayWIB;
-
-        window.openModal = (id) => document.getElementById(id).classList.remove('hidden');
-        window.closeModal = (id) => document.getElementById(id).classList.add('hidden');
-        const showLoading = (msg) => Swal.fire({title: msg, allowOutsideClick: false, didOpen: () => Swal.showLoading()});
-
-        function formatTanggalIndo(dateStr) {
-            if(!dateStr) return "-";
-            const d = new Date(dateStr);
-            return d.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        }
-
-        // Tab Switch Admin
-        window.switchAdminTab = (tabName) => {
-            document.getElementById('admin-tab-dashboard').classList.add('hidden');
-            document.getElementById('admin-tab-siswa').classList.add('hidden');
-            document.getElementById('admin-tab-materi').classList.add('hidden');
-            document.getElementById('admin-tab-rekap').classList.add('hidden');
-            
-            document.getElementById('tab-btn-dashboard').classList.remove('tab-active');
-            document.getElementById('tab-btn-siswa').classList.remove('tab-active');
-            document.getElementById('tab-btn-materi').classList.remove('tab-active');
-            document.getElementById('tab-btn-rekap').classList.remove('tab-active');
-
-            if(tabName === 'dashboard') {
-                document.getElementById('admin-tab-dashboard').classList.remove('hidden');
-                document.getElementById('tab-btn-dashboard').classList.add('tab-active');
-                renderDashboardCharts();
-            } else if(tabName === 'siswa') {
-                document.getElementById('admin-tab-siswa').classList.remove('hidden');
-                document.getElementById('tab-btn-siswa').classList.add('tab-active');
-                loadSiswaTable();
-            } else if(tabName === 'materi') {
-                document.getElementById('admin-tab-materi').classList.remove('hidden');
-                document.getElementById('tab-btn-materi').classList.add('tab-active');
-                loadMateriTable();
-            } else if(tabName === 'rekap') {
-                document.getElementById('admin-tab-rekap').classList.remove('hidden');
-                document.getElementById('tab-btn-rekap').classList.add('tab-active');
-                loadAdminHafalanTable();
-            }
-        };
-
-        // 1. AUTHENTICATION & ROLE MANAGEMENT
-        setPersistence(auth, browserLocalPersistence);
-        onAuthStateChanged(auth, async (user) => {
-            const loginPage = document.getElementById('login-page');
-            const guruPage = document.getElementById('guru-page');
-            const adminPage = document.getElementById('admin-page');
-            const navbar = document.getElementById('navbar');
-
-            if (user) {
-                loginPage.classList.add('hidden');
-                navbar.classList.remove('hidden');
-                
-                let role = "Guru";
-                if (user.email.toLowerCase().includes("admin")) {
-                    role = "Administrator";
-                }
-
-                document.getElementById('user-display-name').innerText = user.email.split('@')[0];
-                document.getElementById('user-display-role').innerText = role;
-
-                if (role === "Administrator") {
-                    guruPage.classList.add('hidden');
-                    adminPage.classList.remove('hidden');
-                    renderDashboardCharts();
-                } else {
-                    adminPage.classList.add('hidden');
-                    guruPage.classList.remove('hidden');
-                }
-            } else {
-                loginPage.classList.remove('hidden');
-                navbar.classList.add('hidden');
-                guruPage.classList.add('hidden');
-                adminPage.classList.add('hidden');
-            }
-        });
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            showLoading('Proses Login...');
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                Swal.close();
-            } catch (error) {
-                Swal.fire('Gagal Login', 'Email atau password salah!', 'error');
-            }
-        });
-
-        document.getElementById('btn-google-login').addEventListener('click', () => {
-            showLoading('Mengarahkan ke Google...');
-            signInWithRedirect(auth, googleProvider);
-        });
-
-        document.getElementById('btn-logout').addEventListener('click', () => {
-            Swal.fire({
-                title: 'Keluar aplikasi?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Log Out',
-            }).then((result) => {
-                if (result.isConfirmed) signOut(auth);
-            });
-        });
-
-        // 2. LOGIKA PRESTASI BADGE
-        async function checkStudentPrestasiBadge(studentName) {
-            try {
-                const q = query(
-                    collection(db, "hafalan_records"),
-                    where("nama_siswa", "==", studentName)
-                );
-                const snap = await getDocs(q);
-                let list = [];
-                snap.forEach(d => list.push(d.data()));
-                list.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
-
-                if (list.length < 3) return false;
-                return (list[0].status_evaluasi === "Lancar" || list[0].status_evaluasi === "Lanjut") && 
-                       (list[1].status_evaluasi === "Lancar" || list[1].status_evaluasi === "Lanjut") && 
-                       (list[2].status_evaluasi === "Lancar" || list[2].status_evaluasi === "Lanjut");
-            } catch (err) {
-                return false;
-            }
-        }
-
-        // 3. KELOLA SISWA (ADMIN)
-        let siswaMasterData = [];
-
-        async function loadSiswaTable() {
-            const tbody = document.getElementById('table-body-siswa');
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6">Memuat data...</td></tr>';
-            try {
-                const snap = await getDocs(collection(db, "students"));
-                siswaMasterData = [];
-                snap.forEach(doc => siswaMasterData.push({ id: doc.id, ...doc.data() }));
-                siswaMasterData.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.nama.localeCompare(b.nama));
-
-                const allRecordsSnap = await getDocs(collection(db, "hafalan_records"));
-                let recordsMap = {};
-                allRecordsSnap.forEach(d => {
-                    const dt = d.data();
-                    if(!recordsMap[dt.nama_siswa]) recordsMap[dt.nama_siswa] = [];
-                    recordsMap[dt.nama_siswa].push(dt);
-                });
-
-                siswaMasterData.forEach(s => {
-                    let list = recordsMap[s.nama] || [];
-                    list.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
-                    s.isPrestasi = (list.length >= 3 && 
-                                   (list[0].status_evaluasi === "Lancar" || list[0].status_evaluasi === "Lanjut") && 
-                                   (list[1].status_evaluasi === "Lancar" || list[1].status_evaluasi === "Lanjut") && 
-                                   (list[2].status_evaluasi === "Lancar" || list[2].status_evaluasi === "Lanjut"));
-                });
-
-                renderSiswaFilteredTable();
-            } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-red-500">Gagal memuat data siswa.</td></tr>';
-            }
-        }
-
-        function renderSiswaFilteredTable() {
-            const tbody = document.getElementById('table-body-siswa');
-            const keyword = document.getElementById('search-siswa-input').value.toLowerCase();
-            tbody.innerHTML = '';
-
-            let filtered = siswaMasterData.filter(s => s.nama.toLowerCase().includes(keyword) || s.kelas.toLowerCase().includes(keyword));
-
-            if(filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Tidak ada data siswa ditemukan.</td></tr>';
-                return;
-            }
-
-            filtered.forEach(data => {
-                const badgeHtml = data.isPrestasi 
-                    ? `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded-full border border-amber-300 whitespace-nowrap">🏆 3x Lanjut</span>` 
-                    : `<span class="text-gray-400 text-xs">-</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-6 py-4 font-medium text-gray-800">${data.nama}</td>
-                        <td class="px-6 py-4 text-gray-600">${data.kelas}</td>
-                        <td class="px-6 py-4 text-center">${badgeHtml}</td>
-                        <td class="px-6 py-4 text-center">
-                            <button onclick="editSiswa('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
-                            <button onclick="hapusSiswa('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        document.getElementById('search-siswa-input').addEventListener('input', renderSiswaFilteredTable);
-
-        document.getElementById('form-add-siswa').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nama = document.getElementById('new-siswa-nama').value;
-            const kelas = document.getElementById('new-siswa-kelas').value;
-            showLoading('Menyimpan...');
-            await addDoc(collection(db, "students"), { nama, kelas, hafalan_terakhir: "-", status_terakhir: "-" });
-            document.getElementById('form-add-siswa').reset();
-            closeModal('modal-add-siswa');
-            Swal.close();
-            loadSiswaTable();
-        });
-
-        window.editSiswa = (id) => {
-            const s = siswaMasterData.find(item => item.id === id);
-            if(!s) return;
-            document.getElementById('edit-siswa-id').value = s.id;
-            document.getElementById('edit-siswa-nama').value = s.nama;
-            document.getElementById('edit-siswa-kelas').value = s.kelas;
-            openModal('modal-edit-siswa');
-        };
-
-        document.getElementById('form-edit-siswa').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-siswa-id').value;
-            const nama = document.getElementById('edit-siswa-nama').value;
-            const kelas = document.getElementById('edit-siswa-kelas').value;
-            showLoading('Mengubah...');
-            await updateDoc(doc(db, "students", id), { nama, kelas });
-            closeModal('modal-edit-siswa');
-            Swal.close();
-            loadSiswaTable();
-        });
-
-        window.hapusSiswa = async (id) => {
-            if(confirm('Hapus siswa ini?')) {
-                await deleteDoc(doc(db, "students", id));
-                loadSiswaTable();
-            }
-        };
-
-        document.getElementById('file-import-siswa').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = async (evt) => {
-                showLoading('Mengimpor Data...');
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet);
-                let count = 0;
-                for(let row of json) {
-                    if(row.Nama && row.Kelas) {
-                        await addDoc(collection(db, "students"), {
-                            nama: String(row.Nama).trim(),
-                            kelas: String(row.Kelas).trim(),
-                            hafalan_terakhir: "-",
-                            status_terakhir: "-"
-                        });
-                        count++;
-                    }
-                }
-                document.getElementById('file-import-siswa').value = "";
-                Swal.fire('Sukses', `${count} Data Siswa berhasil diimpor!`, 'success');
-                loadSiswaTable();
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // 4. KELOLA MATERI (ADMIN)
-        let materiMasterData = [];
-
-        async function loadMateriTable() {
-            const tbody = document.getElementById('table-body-materi');
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6">Memuat data...</td></tr>';
-            try {
-                const snap = await getDocs(collection(db, "materi_list"));
-                materiMasterData = [];
-                snap.forEach(doc => {
-                    materiMasterData.push({ id: doc.id, ...doc.data() });
-                });
-
-                renderMateriFilteredTable();
-            } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-red-500">Gagal memuat data materi.</td></tr>';
-            }
-        }
-
-        function renderMateriFilteredTable() {
-            const tbody = document.getElementById('table-body-materi');
-            const filterKelas = document.getElementById('filter-materi-tabel').value;
-            const keyword = document.getElementById('search-materi-input').value.toLowerCase();
-
-            let displayList = materiMasterData.filter(m => (filterKelas === "Semua" || m.kelas === filterKelas) && (m.nama_materi.toLowerCase().includes(keyword) || m.kelas.toLowerCase().includes(keyword)));
-            displayList.sort((a, b) => a.kelas.localeCompare(b.kelas) || a.urutan - b.urutan);
-
-            tbody.innerHTML = '';
-            if(displayList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Belum ada data materi.</td></tr>';
-                return;
-            }
-            displayList.forEach(data => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-6 py-4 font-medium text-gray-800">${data.kelas}</td>
-                        <td class="px-6 py-4 text-gray-600">${data.urutan}</td>
-                        <td class="px-6 py-4 font-medium text-gray-800">${data.nama_materi}</td>
-                        <td class="px-6 py-4 text-center">
-                            <button onclick="editMateri('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold mr-1">Edit</button>
-                            <button onclick="hapusMateri('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-md text-xs font-semibold">Hapus</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        document.getElementById('filter-materi-tabel').addEventListener('change', renderMateriFilteredTable);
-        document.getElementById('search-materi-input').addEventListener('input', renderMateriFilteredTable);
-
-        document.getElementById('form-add-materi').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nama = document.getElementById('new-materi-nama').value;
-            const kelas = document.getElementById('new-materi-kelas').value;
-            const urut = Number(document.getElementById('new-materi-urut').value);
-            showLoading('Menyimpan...');
-            await addDoc(collection(db, "materi_list"), { nama_materi: nama, kelas: kelas, urutan: urut });
-            document.getElementById('form-add-materi').reset();
-            closeModal('modal-add-materi');
-            Swal.close();
-            loadMateriTable();
-        });
-
-        window.editMateri = (id) => {
-            const m = materiMasterData.find(item => item.id === id);
-            if(!m) return;
-            document.getElementById('edit-materi-id').value = m.id;
-            document.getElementById('edit-materi-nama').value = m.nama_materi;
-            document.getElementById('edit-materi-kelas').value = m.kelas;
-            document.getElementById('edit-materi-urut').value = m.urutan;
-            openModal('modal-edit-materi');
-        };
-
-        document.getElementById('form-edit-materi').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-materi-id').value;
-            const nama = document.getElementById('edit-materi-nama').value;
-            const kelas = document.getElementById('edit-materi-kelas').value;
-            const urut = Number(document.getElementById('edit-materi-urut').value);
-            showLoading('Mengubah...');
-            await updateDoc(doc(db, "materi_list", id), { nama_materi: nama, kelas: kelas, urutan: urut });
-            closeModal('modal-edit-materi');
-            Swal.close();
-            loadMateriTable();
-        });
-
-        window.hapusMateri = async (id) => {
-            if(confirm('Hapus materi ini?')) {
-                await deleteDoc(doc(db, "materi_list", id));
-                loadMateriTable();
-            }
-        };
-
-        document.getElementById('file-import-materi').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-
-            Swal.fire({
-                title: 'Menimpa Seluruh Data Materi?',
-                text: 'Semua data materi lama di database akan dihapus bersih dan digantikan oleh data dari file Excel ini.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Timpa Data!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (!result.isConfirmed) {
-                    document.getElementById('file-import-materi').value = "";
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = async (evt) => {
-                    showLoading('Menghapus materi lama & mengunggah materi baru...');
-                    try {
-                        const data = new Uint8Array(evt.target.result);
-                        const workbook = XLSX.read(data, {type: 'array'});
-                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                        const json = XLSX.utils.sheet_to_json(sheet);
-
-                        const oldSnap = await getDocs(collection(db, "materi_list"));
-                        const deletePromises = [];
-                        oldSnap.forEach((docItem) => {
-                            deletePromises.push(deleteDoc(doc(db, "materi_list", docItem.id)));
-                        });
-                        await Promise.all(deletePromises);
-
-                        let count = 0;
-                        for(let row of json) {
-                            const namaMat = row['Nama Materi'] || row['materi'] || row['Nama'];
-                            const kelasMat = row['Kelas'] || row['kelas'];
-                            const urutMat = row['Urutan'] || row['urutan'] || row['No'];
-                            if(namaMat && kelasMat && urutMat !== undefined) {
-                                await addDoc(collection(db, "materi_list"), {
-                                    nama_materi: String(namaMat).trim(),
-                                    kelas: String(kelasMat).trim(),
-                                    urutan: Number(urutMat)
-                                });
-                                count++;
-                            }
-                        }
-                        
-                        document.getElementById('file-import-materi').value = "";
-                        Swal.fire('Berhasil Ditimpa!', `${count} Data Materi baru telah berhasil diunggah.`, 'success');
-                        loadMateriTable();
-                    } catch (err) {
-                        console.error(err);
-                        Swal.fire('Error', 'Gagal menimpa data materi.', 'error');
-                    }
-                };
-                reader.readAsArrayBuffer(file);
-            });
-        });
-
-        // 5. DASHBOARD CHART GENERATOR
-        let barChartInstance = null;
-        let pieChartInstance = null;
-
-        async function renderDashboardCharts() {
-            showLoading('Memuat Grafik & Statistik...');
-            try {
-                const snapSiswa = await getDocs(collection(db, "students"));
-                const snapMateri = await getDocs(collection(db, "materi_list"));
-                const snapRecords = await getDocs(collection(db, "hafalan_records"));
-
-                document.getElementById('stat-total-siswa').innerText = snapSiswa.size;
-                document.getElementById('stat-total-materi').innerText = snapMateri.size;
-
-                let monthRecords = [];
-                let lancarCount = 0;
-                let classStat = {};
-
-                snapRecords.forEach(d => {
-                    const dt = d.data();
-                    if (dt.tanggal && dt.tanggal.startsWith(currentMonthWIB)) {
-                        monthRecords.push(dt);
-                        if (dt.status_evaluasi === "Lancar" || dt.status_evaluasi === "Lanjut") lancarCount++;
-
-                        if (!classStat[dt.kelas]) classStat[dt.kelas] = { lancar: 0, ulang: 0 };
-                        if (dt.status_evaluasi === "Lancar" || dt.status_evaluasi === "Lanjut") classStat[dt.kelas].lancar++;
-                        else classStat[dt.kelas].ulang++;
-                    }
-                });
-
-                document.getElementById('stat-total-setoran').innerText = monthRecords.length;
-                const percent = monthRecords.length > 0 ? Math.round((lancarCount / monthRecords.length) * 100) : 0;
-                document.getElementById('stat-persen-lancar').innerText = `${percent}%`;
-
-                const classes = Object.keys(classStat);
-                const dataLancar = classes.map(c => classStat[c].lancar);
-                const dataUlang = classes.map(c => classStat[c].ulang);
-
-                if(barChartInstance) barChartInstance.destroy();
-                const ctxBar = document.getElementById('chart-kelas-bar').getContext('2d');
-                barChartInstance = new Chart(ctxBar, {
-                    type: 'bar',
-                    data: {
-                        labels: classes.length > 0 ? classes : ['Belum Ada Data'],
-                        datasets: [
-                            { label: 'Lanjut', data: dataLancar, backgroundColor: '#0d9488' },
-                            { label: 'Ulang', data: dataUlang, backgroundColor: '#f59e0b' }
-                        ]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
-
-                if(pieChartInstance) pieChartInstance.destroy();
-                const ctxPie = document.getElementById('chart-rasio-pie').getContext('2d');
-                pieChartInstance = new Chart(ctxPie, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Lanjut', 'Ulang'],
-                        datasets: [{
-                            data: [lancarCount, monthRecords.length - lancarCount],
-                            backgroundColor: ['#10b981', '#f59e0b']
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
-
-                Swal.close();
-            } catch (err) {
-                console.error(err);
-                Swal.close();
-            }
-        }
-
-        // 6. INPUT HAFALAN & TAMPILAN SISWA BELUM SETOR (GURU)
-        let studentsData = [];
-        let materiData = [];
-
-        async function updateBelumSetorList() {
-            const kelas = document.getElementById('select-kelas').value;
-            const tanggal = document.getElementById('input-tanggal').value;
-            const boxBelumSetor = document.getElementById('box-belum-setor');
-            const listContainer = document.getElementById('list-siswa-belum-setor');
-            const badgeCount = document.getElementById('badge-count-belum-setor');
-
-            if (!kelas || !tanggal) {
-                boxBelumSetor.classList.add('hidden');
-                return;
-            }
-
-            try {
-                // Ambil semua hafalan yang diinput pada tanggal dan kelas terpilih
-                const qHafalan = query(collection(db, "hafalan_records"), 
-                    where("kelas", "==", kelas), 
-                    where("tanggal", "==", tanggal));
-                const snapHafalan = await getDocs(qHafalan);
-                const sudahSetorSet = new Set();
-                snapHafalan.forEach(doc => sudahSetorSet.add(doc.data().nama_siswa));
-
-                // Filter siswa yang belum setor
-                const belumSetorList = studentsData.filter(s => !sudahSetorSet.has(s.nama));
-
-                listContainer.innerHTML = '';
-                badgeCount.innerText = `${belumSetorList.length} Siswa`;
-
-                if (belumSetorList.length === 0) {
-                    listContainer.innerHTML = '<p class="col-span-2 text-emerald-700 font-semibold text-xs">🎉 Luar biasa! Semua siswa kelas ini sudah menyetorkan hafalan hari ini.</p>';
-                } else {
-                    belumSetorList.forEach((s, idx) => {
-                        listContainer.innerHTML += `
-                            <div class="bg-white px-3 py-1.5 rounded border border-amber-200 text-gray-700 font-medium flex items-center justify-between">
-                                <span>${idx + 1}. ${s.nama}</span>
-                                <span class="text-[10px] text-amber-600 font-normal">Belum Setor</span>
-                            </div>`;
-                    });
-                }
-                boxBelumSetor.classList.remove('hidden');
-            } catch (err) {
-                console.error("Gagal memuat list belum setor:", err);
-            }
-        }
-
-        document.getElementById('input-tanggal').addEventListener('change', updateBelumSetorList);
-
-        document.getElementById('select-kelas').addEventListener('change', async (e) => {
-            const kelas = e.target.value;
-            const selSiswa = document.getElementById('select-siswa');
-            const selMateri = document.getElementById('select-materi');
-            document.getElementById('info-siswa').classList.add('hidden');
-            
-            selSiswa.innerHTML = '<option value="">-- Memuat... --</option>';
-            selSiswa.disabled = true;
-            selMateri.innerHTML = '<option value="">-- Pilih Siswa Dulu --</option>';
-            selMateri.disabled = true;
-
-            if(!kelas) {
-                document.getElementById('box-belum-setor').classList.add('hidden');
-                return;
-            }
-
-            const qSiswa = query(collection(db, "students"), where("kelas", "==", kelas));
-            const snapSiswa = await getDocs(qSiswa);
-            studentsData = snapSiswa.docs.map(d => ({id: d.id, ...d.data()}));
-            studentsData.sort((a,b) => a.nama.localeCompare(b.nama));
-
-            selSiswa.innerHTML = '<option value="">-- Pilih Nama Siswa --</option>';
-            studentsData.forEach(s => selSiswa.innerHTML += `<option value="${s.id}">${s.nama}</option>`);
-            selSiswa.disabled = false;
-
-            const qMateri = query(collection(db, "materi_list"), where("kelas", "==", kelas));
-            const snapMateri = await getDocs(qMateri);
-            materiData = snapMateri.docs.map(d => ({id: d.id, ...d.data()}));
-            materiData.sort((a,b) => a.urutan - b.urutan);
-            
-            selMateri.innerHTML = '<option value="">-- Pilih Materi --</option>';
-            materiData.forEach(m => selMateri.innerHTML += `<option value="${m.nama_materi}" data-urut="${m.urutan}">${m.urutan}. ${m.nama_materi}</option>`);
-
-            updateBelumSetorList();
-        });
-
-        document.getElementById('select-siswa').addEventListener('change', async (e) => {
-            const studentId = e.target.value;
-            const selMateri = document.getElementById('select-materi');
-            const infoSiswa = document.getElementById('info-siswa');
-            const badgeGuru = document.getElementById('badge-prestasi-guru');
-            
-            if(!studentId) {
-                infoSiswa.classList.add('hidden');
-                selMateri.disabled = true;
-                return;
-            }
-
-            const student = studentsData.find(s => s.id === studentId);
-            document.getElementById('txt-riwayat').innerText = student.hafalan_terakhir;
-            
-            let displayStatus = student.status_terakhir;
-            if (displayStatus === "Lancar") displayStatus = "Lanjut";
-            if (displayStatus === "Tidak Lancar") displayStatus = "Ulang";
-            document.getElementById('txt-status').innerText = displayStatus;
-
-            const hasBadge = await checkStudentPrestasiBadge(student.nama);
-            if(hasBadge) badgeGuru.classList.remove('hidden');
-            else badgeGuru.classList.add('hidden');
-
-            let targetText = "Materi Awal";
-            if(student.hafalan_terakhir !== "-") {
-                const riwayatMateri = materiData.find(m => m.nama_materi === student.hafalan_terakhir);
-                if(riwayatMateri) {
-                    if(student.status_terakhir === "Lancar" || student.status_terakhir === "Lanjut") {
-                        const nextMateri = materiData.find(m => m.urutan === riwayatMateri.urutan + 1);
-                        if(nextMateri) {
-                            targetText = nextMateri.nama_materi;
-                            selMateri.value = nextMateri.nama_materi;
-                        } else {
-                            targetText = "Semua materi kelas ini selesai!";
-                        }
-                    } else {
-                        targetText = student.hafalan_terakhir;
-                        selMateri.value = student.hafalan_terakhir;
-                    }
-                }
-            }
-            document.getElementById('txt-target').innerText = targetText;
-            infoSiswa.classList.remove('hidden');
-            selMateri.disabled = false;
-        });
-
-        async function simpanHafalan(statusEval) {
-            const tgl = document.getElementById('input-tanggal').value;
-            const kelas = document.getElementById('select-kelas').value;
-            const selSiswa = document.getElementById('select-siswa');
-            const studentId = selSiswa.value;
-            const namaSiswa = selSiswa.options[selSiswa.selectedIndex].text;
-            const materi = document.getElementById('select-materi').value;
-
-            if(!kelas || !studentId || !materi) {
-                return Swal.fire('Error', 'Harap lengkapi semua isian (Kelas, Siswa, Materi).', 'warning');
-            }
-            showLoading('Mengecek Data...');
-            const qCek = query(collection(db, "hafalan_records"), 
-                where("nama_siswa", "==", namaSiswa), 
-                where("tanggal", "==", tgl));
-            const cekSnap = await getDocs(qCek);
-            
-            if(!cekSnap.empty) {
-                return Swal.fire('Ditolak', `Siswa bernama ${namaSiswa} sudah disetor hafalannya untuk tanggal ${tgl}. Tidak bisa input 2 kali dalam sehari.`, 'error');
-            }
-
-            Swal.fire({title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
-            try {
-                await addDoc(collection(db, "hafalan_records"), {
-                    tanggal: tgl,
-                    kelas: kelas,
-                    nama_siswa: namaSiswa,
-                    materi_hafalan: materi,
-                    status_evaluasi: statusEval
-                });
-
-                await updateDoc(doc(db, "students", studentId), {
-                    hafalan_terakhir: materi,
-                    status_terakhir: statusEval
-                });
-
-                const studentIndex = studentsData.findIndex(s => s.id === studentId);
-                if(studentIndex > -1) {
-                    studentsData[studentIndex].hafalan_terakhir = materi;
-                    studentsData[studentIndex].status_terakhir = statusEval;
-                }
-
-                Swal.fire('Sukses!', 'Data hafalan berhasil disimpan.', 'success').then(() => {
-                    document.getElementById('select-siswa').value = "";
-                    document.getElementById('select-materi').value = "";
-                    document.getElementById('select-materi').disabled = true;
-                    document.getElementById('info-siswa').classList.add('hidden');
-                    updateBelumSetorList(); // Refresh otomatis daftar belum setor
-                });
-            } catch (error) {
-                Swal.fire('Error', 'Terjadi kesalahan saat menyimpan data.', 'error');
-            }
-        }
-
-        document.getElementById('btn-lancar').addEventListener('click', () => simpanHafalan("Lanjut"));
-        document.getElementById('btn-ulang').addEventListener('click', () => simpanHafalan("Ulang"));
-
-        // 7. KELOLA SETORAN HAFALAN (ADMINISTRATOR)
-        let hafalanMasterDataAdmin = [];
-
-        async function loadAdminHafalanTable() {
-            const tbody = document.getElementById('table-body-hafalan-admin');
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6">Memuat data hafalan...</td></tr>';
-            try {
-                const snap = await getDocs(collection(db, "hafalan_records"));
-                hafalanMasterDataAdmin = [];
-                snap.forEach(d => {
-                    hafalanMasterDataAdmin.push({ id: d.id, ...d.data() });
-                });
-                renderAdminHafalanFilteredTable();
-            } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-red-500">Gagal memuat data hafalan.</td></tr>';
-            }
-        }
-
-        function renderAdminHafalanFilteredTable() {
-            const tbody = document.getElementById('table-body-hafalan-admin');
-            const kelasVal = document.getElementById('filter-hafalan-kelas-admin').value;
-            const tanggalVal = document.getElementById('filter-hafalan-tanggal-admin').value;
-
-            let filtered = hafalanMasterDataAdmin.filter(item => {
-                const matchKelas = !kelasVal || item.kelas === kelasVal;
-                const matchTanggal = !tanggalVal || item.tanggal === tanggalVal;
-                return matchKelas && matchTanggal;
-            });
-
-            filtered.sort((a,b) => b.tanggal.localeCompare(a.tanggal) || a.kelas.localeCompare(b.kelas) || a.nama_siswa.localeCompare(b.nama_siswa));
-
-            tbody.innerHTML = '';
-            if(filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-gray-400">Tidak ada data setoran hafalan ditemukan.</td></tr>';
-                return;
-            }
-
-            filtered.forEach(data => {
-                let statusFormatted = data.status_evaluasi;
-                if (statusFormatted === "Lancar") statusFormatted = "Lanjut";
-                else if (statusFormatted === "Tidak Lancar") statusFormatted = "Ulang";
-
-                const badgeClass = statusFormatted === "Lanjut" 
-                    ? "bg-emerald-100 text-emerald-800 border-emerald-300" 
-                    : "bg-amber-100 text-amber-800 border-amber-300";
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="px-4 py-3 font-medium text-gray-700">${data.tanggal}</td>
-                        <td class="px-4 py-3 text-gray-600">${data.kelas}</td>
-                        <td class="px-4 py-3 font-semibold text-gray-800">${data.nama_siswa}</td>
-                        <td class="px-4 py-3 text-gray-700">${data.materi_hafalan}</td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="${badgeClass} border px-2 py-0.5 rounded-full text-[11px] font-bold">
-                                ${statusFormatted}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <button onclick="editHafalanAdmin('${data.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded text-xs font-semibold mr-1">Edit</button>
-                            <button onclick="hapusHafalanAdmin('${data.id}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">Hapus</button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        document.getElementById('filter-hafalan-kelas-admin').addEventListener('change', renderAdminHafalanFilteredTable);
-        document.getElementById('filter-hafalan-tanggal-admin').addEventListener('change', renderAdminHafalanFilteredTable);
-
-        window.editHafalanAdmin = (id) => {
-            const h = hafalanMasterDataAdmin.find(item => item.id === id);
-            if(!h) return;
-            document.getElementById('edit-hafalan-id').value = h.id;
-            document.getElementById('edit-hafalan-tanggal').value = h.tanggal;
-            document.getElementById('edit-hafalan-kelas').value = h.kelas;
-            document.getElementById('edit-hafalan-siswa').value = h.nama_siswa;
-            document.getElementById('edit-hafalan-materi').value = h.materi_hafalan;
-            
-            let st = h.status_evaluasi;
-            if(st === "Lancar") st = "Lanjut";
-            if(st === "Tidak Lancar") st = "Ulang";
-            document.getElementById('edit-hafalan-status').value = st;
-
-            openModal('modal-edit-hafalan');
-        };
-
-        document.getElementById('form-edit-hafalan').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('edit-hafalan-id').value;
-            const tanggal = document.getElementById('edit-hafalan-tanggal').value;
-            const materi = document.getElementById('edit-hafalan-materi').value;
-            const status = document.getElementById('edit-hafalan-status').value;
-
-            showLoading('Mengubah...');
-            try {
-                await updateDoc(doc(db, "hafalan_records", id), {
-                    tanggal: tanggal,
-                    materi_hafalan: materi,
-                    status_evaluasi: status
-                });
-                closeModal('modal-edit-hafalan');
-                Swal.fire('Berhasil', 'Data setoran hafalan telah diperbarui!', 'success');
-                loadAdminHafalanTable();
-            } catch (err) {
-                Swal.fire('Error', 'Gagal memperbarui data hafalan.', 'error');
-            }
-        });
-
-        window.hapusHafalanAdmin = async (id) => {
-            Swal.fire({
-                title: 'Hapus Setoran Hafalan Ini?',
-                text: 'Data yang dihapus tidak dapat dikembalikan lagi.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, Hapus Data',
-                cancelButtonText: 'Batal'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    showLoading('Menghapus...');
-                    await deleteDoc(doc(db, "hafalan_records", id));
-                    Swal.fire('Terhapus!', 'Data setoran hafalan berhasil dihapus.', 'success');
-                    loadAdminHafalanTable();
-                }
-            });
-        };
-
-        // 8. EKSPOR LAPORAN PDF & EXCEL
-        function generateOfficialPDF(data, tanggal, kelas) {
-            if(data.length === 0) return Swal.fire('Kosong', 'Tidak ada data hafalan untuk tanggal/kelas tersebut.', 'info');
-            
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const pageWidth = doc.internal.pageSize.getWidth();
-
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(16);
-            doc.setTextColor(13, 148, 136);
-            doc.text("E Tahsin - Monitoring Hafalan Siswa", pageWidth / 2, 16, { align: "center" });
-
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text("MI Salafiyah Wareng", pageWidth / 2, 23, { align: "center" });
-
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor(50, 50, 50);
-            const infoText = `Kelas: ${kelas}  |  Hari dan Tanggal: ${formatTanggalIndo(tanggal)}`;
-            doc.text(infoText, pageWidth / 2, 30, { align: "center" });
-
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.5);
-            doc.line(14, 34, pageWidth - 14, 34);
-
-            const bodyPDF = data.map((row, idx) => {
-                let statusFormatted = row.status_evaluasi;
-                if (statusFormatted === "Lancar") statusFormatted = "Lanjut";
-                else if (statusFormatted === "Tidak Lancar") statusFormatted = "Ulang";
-
-                return [idx + 1, row.nama_siswa, row.kelas, row.materi_hafalan, statusFormatted];
-            });
-
-            doc.autoTable({
-                startY: 38,
-                head: [['No', 'Nama Siswa', 'Kelas', 'Materi Hafalan', 'Keterangan']],
-                body: bodyPDF,
-                theme: 'grid',
-                headStyles: { 
-                    fillColor: [13, 148, 136], 
-                    textColor: [255, 255, 255], 
-                    fontStyle: 'bold',
-                    halign: 'center'
-                },
-                styles: { fontSize: 9, cellPadding: 2.5 },
-                columnStyles: {
-                    0: { cellWidth: 12, halign: 'center' },
-                    1: { cellWidth: 50 },
-                    2: { cellWidth: 35 },
-                    3: { cellWidth: 55 },
-                    4: { cellWidth: 30, halign: 'center' }
-                }
-            });
-
-            const finalY = doc.lastAutoTable.finalY + 12;
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const footerY = Math.max(finalY, pageHeight - 20);
-
-            doc.setDrawColor(220, 220, 220);
-            doc.setLineWidth(0.3);
-            doc.line(14, footerY - 5, pageWidth - 14, footerY - 5);
-
-            doc.setFont("helvetica", "italic");
-            doc.setFontSize(8);
-            doc.setTextColor(120, 120, 120);
-            doc.text("Dokumen ini dicetak secara otomatis melalui Sistem E-Tahsin MI Salafiyah Wareng.", 14, footerY);
-            
-            const nowPrint = new Date().toLocaleString('id-ID');
-            doc.text(`Dicetak pada: ${nowPrint}`, pageWidth - 14, footerY, { align: "right" });
-
-            doc.save(`Laporan_Hafalan_${kelas.replace(/\s+/g, '_')}_${tanggal}.pdf`);
-        }
-
-        document.getElementById('btn-download-pdf-guru').addEventListener('click', async () => {
-            const k = document.getElementById('filter-kelas-guru').value;
-            const t = document.getElementById('filter-tanggal-guru').value;
-            
-            showLoading('Mengunduh PDF...');
-            let q = query(collection(db, "hafalan_records"), where("tanggal", "==", t));
-            if(k) q = query(collection(db, "hafalan_records"), where("tanggal", "==", t), where("kelas", "==", k));
-            
-            const snap = await getDocs(q);
-            let records = [];
-            snap.forEach(d => records.push(d.data()));
-            records.sort((a,b) => a.nama_siswa.localeCompare(b.nama_siswa));
-            Swal.close();
-            
-            generateOfficialPDF(records, t, k || "Semua Kelas");
-        });
-
-        document.getElementById('btn-download-pdf-admin').addEventListener('click', async () => {
-            const k = document.getElementById('filter-kelas-pdf-admin').value;
-            const t = document.getElementById('filter-tanggal-pdf-admin').value;
-            
-            showLoading('Mengunduh PDF...');
-            let q = query(collection(db, "hafalan_records"), where("tanggal", "==", t));
-            if(k) q = query(collection(db, "hafalan_records"), where("tanggal", "==", t), where("kelas", "==", k));
-            
-            const snap = await getDocs(q);
-            let records = [];
-            snap.forEach(d => records.push(d.data()));
-            records.sort((a,b) => a.nama_siswa.localeCompare(b.nama_siswa));
-            Swal.close();
-            
-            generateOfficialPDF(records, t, k || "Semua Kelas");
-        });
-
-        document.getElementById('btn-download-excel-admin').addEventListener('click', async () => {
-            const k = document.getElementById('filter-kelas-excel-admin').value;
-            const monthVal = document.getElementById('filter-bulan-excel-admin').value;
-
-            if(!monthVal) return Swal.fire('Pilih Bulan', 'Harap pilih bulan dan tahun terlebih dahulu.', 'warning');
-
-            showLoading('Menyiapkan Arsip Excel Bulanan...');
-            const snap = await getDocs(collection(db, "hafalan_records"));
-            let records = [];
-            snap.forEach(d => {
-                const dt = d.data();
-                if(dt.tanggal && dt.tanggal.startsWith(monthVal)) {
-                    if(!k || dt.kelas === k) {
-                        records.push(dt);
-                    }
-                }
-            });
-
-            records.sort((a, b) => a.tanggal.localeCompare(b.tanggal) || a.kelas.localeCompare(b.kelas) || a.nama_siswa.localeCompare(b.nama_siswa));
-
-            if(records.length === 0) {
-                Swal.close();
-                return Swal.fire('Kosong', 'Tidak ada data hafalan pada bulan tersebut.', 'info');
-            }
-
-            const excelData = records.map((row, idx) => {
-                let statusFormatted = row.status_evaluasi;
-                if (statusFormatted === "Lancar") statusFormatted = "Lanjut";
-                else if (statusFormatted === "Tidak Lancar") statusFormatted = "Ulang";
-
-                return {
-                    "No": idx + 1,
-                    "Tanggal": row.tanggal,
-                    "Nama Siswa": row.nama_siswa,
-                    "Kelas": row.kelas,
-                    "Materi Hafalan": row.materi_hafalan,
-                    "Keterangan": statusFormatted
-                };
-            });
-
-            const worksheet = XLSX.utils.json_to_sheet(excelData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Bulanan");
-            
-            Swal.close();
-            XLSX.writeFile(workbook, `Arsip_Hafalan_${k || "Semua_Kelas"}_${monthVal}.xlsx`);
-        });
-
-    </script>
+      });
+      if (dataExcel.length === 0) { Swal.fire('Info', 'Tidak ada data.', 'info'); return; }
+      dataExcel.sort((a,b) => a.tanggal.localeCompare(b.tanggal) || a["nama siswa"].localeCompare(b["nama siswa"]));
+      dataExcel.forEach((row, idx) => row.no = idx + 1);
+      const worksheet = XLSX.utils.json_to_sheet(dataExcel); const workbook = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(workbook, worksheet, "Arsip Laporan Bulanan");
+      XLSX.writeFile(workbook, `Laporan_Bulanan_Hafalan_${kelas || 'Semua'}_${bulan || 'Semua'}.xlsx`);
+    });
+
+    document.getElementById('btnAdminExportPDF').addEventListener('click', async () => {
+      const kelas = document.getElementById('filterAdminKelas').value;
+      const bulan = document.getElementById('filterAdminBulan').value;
+      let constraints = []; if (kelas) constraints.push(where("kelas", "==", kelas));
+      const snap = await getDocs(query(collection(db, "hafalan_records"), ...constraints));
+      let records = [];
+      snap.forEach(d => {
+        const r = d.data(); if (!bulan || (r.tanggal && r.tanggal.startsWith(bulan))) records.push(r);
+      });
+      if (records.length === 0) { Swal.fire('Info', 'Tidak ada data untuk diekspor.', 'info'); return; }
+      records.sort((a,b) => b.tanggal.localeCompare(a.tanggal));
+
+      const { jsPDF } = window.jspdf; const docPDF = new jsPDF();
+      const pageWidth = docPDF.internal.pageSize.getWidth(); const pageHeight = docPDF.internal.pageSize.getHeight();
+
+      docPDF.setFont("helvetica", "bold"); docPDF.setFontSize(14); docPDF.setTextColor(15, 118, 110); docPDF.text("E Smart - Monitoring Numerasi Siswa", pageWidth / 2, 15, { align: "center" });
+      docPDF.setFontSize(12); docPDF.setTextColor(0, 0, 0); docPDF.text("MI Salafiyah Wareng", pageWidth / 2, 22, { align: "center" });
+      docPDF.setFont("helvetica", "normal"); docPDF.setFontSize(10); docPDF.text(`Kelas: ${kelas || 'Semua Kelas'} | Bulan: ${bulan || 'Semua Bulan'}`, pageWidth / 2, 28, { align: "center" });
+      docPDF.setLineWidth(0.5); docPDF.setDrawColor(15, 118, 110); docPDF.line(14, 32, pageWidth - 14, 32);
+
+      const tableBody = records.map((r, i) => [ i + 1, r.tanggal, r.kelas, r.nama_siswa, r.materi_hafalan, r.status_evaluasi === 'Lancar' ? 'Lanjut' : 'Ulang' ]);
+      docPDF.autoTable({
+        startY: 36, head: [['No', 'Tanggal', 'Kelas', 'Nama Siswa', 'Materi Hafalan', 'Keterangan']], body: tableBody, theme: 'grid', headStyles: { fillColor: [30, 41, 59], halign: 'center' },
+        didDrawPage: (data) => { docPDF.setFontSize(8); docPDF.setTextColor(100, 116, 139); docPDF.text("Dokumen Resmi E-Smart - Administrator", 14, pageHeight - 10); docPDF.text(`Halaman ${data.pageNumber}`, pageWidth - 14, pageHeight - 10, { align: "right" }); }
+      });
+      docPDF.save(`Rekap_Admin_${bulan || 'Semua'}_${kelas || 'Semua'}.pdf`);
+    });
+
+  </script>
 </body>
 </html>
