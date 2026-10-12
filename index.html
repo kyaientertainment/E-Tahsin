@@ -671,9 +671,10 @@
     <!-- SCRIPT LOGIKA UTAMA FIREBASE & APP -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } 
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy, limit } 
+        // IMPORT writeBatch ditambahkan
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, where, orderBy, limit, writeBatch } 
             from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // CONFIG FIREBASE
@@ -692,11 +693,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
-
-        getRedirectResult(auth).catch((error) => {
-            console.error("Gagal menangkap redirect:", error);
-            Swal.fire('Gagal Login', error.message, 'error');
-        });
 
         // FUNGSI MENGAMBIL TANGGAL OTOMATIS BERDASARKAN WAKTU INDONESIA BARAT (WIB / Asia/Jakarta)
         function getWIBDateString() {
@@ -806,9 +802,15 @@
             }
         });
 
-        document.getElementById('btn-google-login').addEventListener('click', () => {
+        // PERBAIKAN: Menggunakan signInWithPopup agar aman di mobile browser
+        document.getElementById('btn-google-login').addEventListener('click', async () => {
             showLoading('Mengarahkan ke Google...');
-            signInWithRedirect(auth, googleProvider);
+            try {
+                await signInWithPopup(auth, googleProvider);
+                Swal.close();
+            } catch (error) {
+                Swal.fire('Gagal Login', error.message, 'error');
+            }
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => {
@@ -950,31 +952,42 @@
             }
         };
 
+        // PERBAIKAN: Import Siswa Menggunakan Batch Write
         document.getElementById('file-import-siswa').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = async (evt) => {
-                showLoading('Mengimpor Data...');
+                showLoading('Mengimpor Data (Proses Batch)...');
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const sheet = workbook.Sheets[workbook.SheetNames[0]];
                 const json = XLSX.utils.sheet_to_json(sheet);
-                let count = 0;
-                for(let row of json) {
-                    if(row.Nama && row.Kelas) {
-                        await addDoc(collection(db, "students"), {
-                            nama: String(row.Nama).trim(),
-                            kelas: String(row.Kelas).trim(),
-                            hafalan_terakhir: "-",
-                            status_terakhir: "-"
-                        });
-                        count++;
+                
+                try {
+                    let count = 0;
+                    const batch = writeBatch(db);
+                    
+                    for(let row of json) {
+                        if(row.Nama && row.Kelas) {
+                            const newDocRef = doc(collection(db, "students"));
+                            batch.set(newDocRef, {
+                                nama: String(row.Nama).trim(),
+                                kelas: String(row.Kelas).trim(),
+                                hafalan_terakhir: "-",
+                                status_terakhir: "-"
+                            });
+                            count++;
+                        }
                     }
+                    
+                    await batch.commit(); // Mengeksekusi semua set data sekaligus
+                    document.getElementById('file-import-siswa').value = "";
+                    Swal.fire('Sukses', `${count} Data Siswa berhasil diimpor dengan cepat!`, 'success');
+                    loadSiswaTable();
+                } catch (error) {
+                    Swal.fire('Error', 'Gagal mengimpor data siswa.', 'error');
                 }
-                document.getElementById('file-import-siswa').value = "";
-                Swal.fire('Sukses', `${count} Data Siswa berhasil diimpor!`, 'success');
-                loadSiswaTable();
             };
             reader.readAsArrayBuffer(file);
         });
@@ -1071,6 +1084,7 @@
             }
         };
 
+        // PERBAIKAN: Import Materi Menggunakan Batch Write
         document.getElementById('file-import-materi').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if(!file) return;
@@ -1099,20 +1113,26 @@
                         const sheet = workbook.Sheets[workbook.SheetNames[0]];
                         const json = XLSX.utils.sheet_to_json(sheet);
 
+                        // Batch Hapus Data Lama
                         const oldSnap = await getDocs(collection(db, "materi_list"));
-                        const deletePromises = [];
+                        const batchDelete = writeBatch(db);
                         oldSnap.forEach((docItem) => {
-                            deletePromises.push(deleteDoc(doc(db, "materi_list", docItem.id)));
+                            batchDelete.delete(doc(db, "materi_list", docItem.id));
                         });
-                        await Promise.all(deletePromises);
+                        await batchDelete.commit();
 
+                        // Batch Tambah Data Baru
                         let count = 0;
+                        const batchInsert = writeBatch(db);
+                        
                         for(let row of json) {
                             const namaMat = row['Nama Materi'] || row['materi'] || row['Nama'];
                             const kelasMat = row['Kelas'] || row['kelas'];
                             const urutMat = row['Urutan'] || row['urutan'] || row['No'];
+                            
                             if(namaMat && kelasMat && urutMat !== undefined) {
-                                await addDoc(collection(db, "materi_list"), {
+                                const newDocRef = doc(collection(db, "materi_list"));
+                                batchInsert.set(newDocRef, {
                                     nama_materi: String(namaMat).trim(),
                                     kelas: String(kelasMat).trim(),
                                     urutan: Number(urutMat)
@@ -1120,9 +1140,10 @@
                                 count++;
                             }
                         }
+                        await batchInsert.commit();
                         
                         document.getElementById('file-import-materi').value = "";
-                        Swal.fire('Berhasil Ditimpa!', `${count} Data Materi baru telah berhasil diunggah.`, 'success');
+                        Swal.fire('Berhasil Ditimpa!', `${count} Data Materi baru telah berhasil diunggah dengan cepat.`, 'success');
                         loadMateriTable();
                     } catch (err) {
                         console.error(err);
